@@ -2,12 +2,13 @@
 import { io } from 'socket.io-client'
 import { OrderCart } from 'src/types/cart'
 
-const socketUrl = 'http://' + process.env.LOCAL_SOCKET_SERVER_IP  + ':5000'
+// const socketUrl = 'http://' + process.env.LOCAL_SOCKET_SERVER_IP  + ':5000'
 // const socket = io('http//localhost:6000')
 // const socket = io(socketUrl, {
 //   transports: ['websocket']
 // })
 // Listen for the 'connection' event
+const socketUrl = 'http://localhost:3000'
 const socket = io(socketUrl)
 socket.on('connect', () => {
   console.log('Connected to the local socket')
