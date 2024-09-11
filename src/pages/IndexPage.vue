@@ -14,7 +14,6 @@ const cartItems = ref<OrderCart | null>(null)
   function updateCart(data: OrderCart) {
     console.log(data)
     cartItems.value = {...data}
-    console.log(cartItems.value)
   }
 
   onMounted(() => {
