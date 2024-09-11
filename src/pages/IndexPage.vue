@@ -1,5 +1,5 @@
 <template>
-  <q-page class="row items-center justify-evenly">
+  <q-page class="row items-center justify-evenly full-height">
     <div class="col-6">
       <q-table
         :rows="tableRows"
@@ -12,7 +12,7 @@
         :footer-props="footerProps"
         :pagination="pagination"
       />
-      <div class="total-wrapper q-mt-md">
+      <div class="total-wrapper">
         <q-card class="total-card">
           <q-card-section>
             <div class="text-center text-h6 text-white">
@@ -22,8 +22,8 @@
         </q-card>
       </div>
     </div>
-    <div class="col-6">
-      <q-img src="src/assets/pratham_pos.png" class="fit" />
+    <div class="col-6 image-container ">
+      <q-img src="src/assets/image.png" class="image-fit" />
     </div>
   </q-page>
 </template>
@@ -104,7 +104,7 @@ onUnmounted(() => {})
 
 <style scoped>
 .q-table {
-  width: 100%;
+  width: 98%;
   height: calc(100vh - 130px);
   background-color: rgba(142, 0, 250, 0.123);
 }
@@ -116,12 +116,29 @@ onUnmounted(() => {})
 }
 
 .total-wrapper {
+  width: 98%;
   margin-top: 16px;
 }
 
-.fit {
-  width: 100%;
-  height: 100%;
+.full-height {
+  height: 100vh; /* Full viewport height */
+}
+
+.image-container {
+  display: flex;
+  align-items: center; /* Center the image vertically */
+  justify-content: center; /* Center the image horizontally */
+  height: 100vh; /* Set the container to the full screen height */
+}
+
+.image-fit {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain; /* Ensure the image fits without cropping */
+}
+
+.full-height {
+  height: 100vh; /* Set the height to the full viewport height */
 }
 
 .q-table__header .q-th {
