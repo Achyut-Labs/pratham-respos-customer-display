@@ -1,15 +1,20 @@
 <template>
   <q-page class="row items-center justify-evenly full-height">
     <div class="col-6">
+      <div class="customer-details text-center">
+        <strong></strong> {{ customer.name || 'Guest' }}
+      </div>
       <div class="customer-info">
-        <!-- <div class="customer-detail">
-          <strong>Customer:</strong> {{ customer.name || 'No customer available' }}
-        </div> -->
-
-        <div class="customer-detail">
-          <strong>Order Id:</strong> #{{ cartItems?.orderId }}
+        <div class="row justify-between customer-detail">
+          <div class="col-auto text-left">
+            <strong>Customer Id:</strong> {{ cartItems?.orderId }}
+          </div>
+          <div class="col-auto text-right">
+            <strong>Order Id:</strong> #{{ cartItems?.daily_order_number }}
+          </div>
         </div>
       </div>
+
 
       <q-table
         :rows="tableRows"
@@ -21,11 +26,11 @@
         hide-bottom
         :pagination="pagination"
       >
-      <template v-slot:body-cell-nameWithModifiers="props">
-        <q-td :props="props">
-          <div v-html="props.row.nameWithModifiers"></div>
-        </q-td>
-      </template>
+        <template v-slot:body-cell-nameWithModifiers="props">
+          <q-td :props="props">
+            <div v-html="props.row.nameWithModifiers"></div>
+          </q-td>
+        </template>
 
         <template v-slot:body-cell-quantity="props">
           <q-td :props="props">
@@ -49,12 +54,16 @@
             </div>
             <div v-if="surchargeAmount !== '0.00'" class="row q-col-gutter-md total-section">
               <div class="col text-h8 text-bold text-white">Surcharge: </div>
-              <div class="col text-h8 text-right text-bold text-white">+ ${{ surchargeAmount }}</div>
+              <div class="col text-h8 text-right text-bold text-white">
+                + {{ surchargeAmount }}{{ cartItems?.surcharge_type === 0 ? '%' : '' }}
+              </div>
             </div>
 
             <div v-if="discountAmount !== '0.00'" class="row q-col-gutter-md total-section">
               <div class="col text-h8 text-bold text-white">Discount: </div>
-              <div class="col text-h8 text-right text-bold text-white">- ${{ discountAmount }}</div>
+              <div class="col text-h8 text-right text-bold text-white">
+                - {{ discountAmount }}{{ cartItems?.discount_type === 0 ? '%' : '' }}
+              </div>
             </div>
             <div class="row q-col-gutter-md total-section">
               <div class="col text-h4 text-bold text-white">Total: </div>
@@ -71,7 +80,6 @@
   </q-page>
 </template>
 
-
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
 import { onCartUpdate } from '../boot/local-socket';
@@ -80,20 +88,26 @@ import { OrderCart, Customer } from '../types/index';
 const cartItems = ref<OrderCart | null>(null)
 const customer = ref<Customer>({ name: '', email: '', phone_no: '', id: 0 });
 
-// Computed values for surcharge, discount, and total
 const totalAmount = computed(() => {
   return cartItems.value?.totalAmount.toFixed(2) ?? '0.00'
 })
+
 const subTotal = computed(() => {
   return cartItems.value?.subTotal.toFixed(2) ?? '0.00'
 })
 
 const surchargeAmount = computed(() => {
-  return cartItems.value?.surcharge_amount ? Number(cartItems.value.surcharge_amount).toFixed(2) : '0.00'
+  const amount = cartItems.value?.surcharge_amount ?? 0
+  return cartItems.value?.surcharge_type === 1
+    ? `$${amount}`
+    : `${amount}%`
 })
 
 const discountAmount = computed(() => {
-  return cartItems.value?.discount ? Number(cartItems.value.discount).toFixed(2) : '0.00'
+  const amount = cartItems.value?.discount ?? 0
+  return cartItems.value?.discount_type === 1
+    ? `$${amount}`
+    : `${amount}%`
 })
 
 function updateCart(data: OrderCart) {
@@ -104,35 +118,29 @@ function updateCart(data: OrderCart) {
 
 const tableRows = computed(() => {
   if (cartItems.value) {
-    const items = cartItems.value.orderList.map(item => ({
-      ...item,
-      nameWithModifiers: item.modifiers.length > 0
-        ? `<strong>${item.name} ($${item.price.toFixed(2)})</strong><br>` + item.modifiers.map(mod =>
-            `- ${mod.modifier_name} ($${mod.price.toFixed(2)} x ${mod.quantity})`
-          ).join('<br>')
-        : `<strong>${item.name} ($${item.price.toFixed(2)})</strong>`
-    }))
+    const items = cartItems.value.orderList.map(item => {
+      let nameWithModifiers = `<strong>${item.name} ($${item.price.toFixed(2)})</strong>`
 
-    // Add surcharge row if surchargeAmount is greater than 0
-    // if (surchargeAmount.value !== '0.00') {
-    //   items.push({
-    //     nameWithModifiers: '<strong>Surcharge</strong>',
-    //     line_item_total: `${surchargeAmount.value}`
-    //   })
-    // }
-    // if (discountAmount.value !== '0.00') {
-    //   items.push({
-    //     nameWithModifiers: '<strong>Discount</strong>',
-    //     line_item_total: `${discountAmount.value}`
-    //   })
-    // }
+      if (item.notes && item.notes.trim()) {
+        nameWithModifiers += `<br><e style="color: brown; font-weight: bold;">${item.notes}</e>`
+      }
+
+      if (item.modifiers.length > 0) {
+        nameWithModifiers += '<br>' + item.modifiers.map(mod =>
+          `- ${mod.modifier_name} ($${mod.price.toFixed(2)} x ${mod.quantity})`
+        ).join('<br>')
+      }
+
+      return {
+        ...item,
+        nameWithModifiers
+      }
+    })
 
     return items
   }
   return []
 })
-
-
 
 
 const columns = [
@@ -155,7 +163,7 @@ const columns = [
     label: 'Total',
     align: 'right' as const,
     field: (row: { line_item_total: string; }) => row.line_item_total,
-   }
+  }
 ]
 
 const pagination = ref({
@@ -170,12 +178,11 @@ onMounted(() => {
 </script>
 
 
-
 <style scoped>
 .q-table {
   margin: 8px;
   width: 98%;
-  height: calc(100vh - 240px);
+  height: calc(100vh - 270px);
   background-color: rgba(38, 36, 39, 0.034);
 }
 
@@ -232,6 +239,11 @@ onMounted(() => {
   border-radius: 5px;
 }
 
+.customer-details {
+  font-size: 24px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
 .customer-detail {
   font-size: 16px;
   font-weight: bold;
