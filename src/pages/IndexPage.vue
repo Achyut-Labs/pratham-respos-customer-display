@@ -2,11 +2,12 @@
   <q-page class="row items-center justify-evenly full-height">
     <div class="col-6">
       <div class="customer-info">
+        <!-- <div class="customer-detail">
+          <strong>Customer:</strong> {{ customer.name || 'No customer available' }}
+        </div> -->
+
         <div class="customer-detail">
-          <strong>Customer:</strong> {{ customer.name }}
-        </div>
-        <div class="customer-detail">
-          <strong>Daily Order:</strong> #{{ cartItems?.daily_order_number }}
+          <strong>Order Id:</strong> #{{ cartItems?.orderId }}
         </div>
       </div>
 
@@ -43,12 +44,21 @@
         <q-card class="summary-card">
           <q-card-section>
             <div class="row q-col-gutter-md total-section">
-              <div class="col text-h6 text-bold text-white">Sub Total: </div>
-              <div class="col text-h6 text-right text-bold text-white">${{ subTotal }}</div>
+              <div class="col text-h8 text-bold text-white">Sub Total: </div>
+              <div class="col text-h8 text-right text-bold text-white">${{ subTotal }}</div>
+            </div>
+            <div v-if="surchargeAmount !== '0.00'" class="row q-col-gutter-md total-section">
+              <div class="col text-h8 text-bold text-white">Surcharge: </div>
+              <div class="col text-h8 text-right text-bold text-white">+ ${{ surchargeAmount }}</div>
+            </div>
+
+            <div v-if="discountAmount !== '0.00'" class="row q-col-gutter-md total-section">
+              <div class="col text-h8 text-bold text-white">Discount: </div>
+              <div class="col text-h8 text-right text-bold text-white">- ${{ discountAmount }}</div>
             </div>
             <div class="row q-col-gutter-md total-section">
-              <div class="col text-h6 text-bold text-white">Total: </div>
-              <div class="col text-h6 text-right text-bold text-white">${{ totalAmount }}</div>
+              <div class="col text-h4 text-bold text-white">Total: </div>
+              <div class="col text-h4 text-right text-bold text-white">${{ totalAmount }}</div>
             </div>
           </q-card-section>
         </q-card>
@@ -97,27 +107,32 @@ const tableRows = computed(() => {
     const items = cartItems.value.orderList.map(item => ({
       ...item,
       nameWithModifiers: item.modifiers.length > 0
-        ? `<strong>${item.name}</strong><br>` + item.modifiers.map(mod =>
+        ? `<strong>${item.name} ($${item.price.toFixed(2)})</strong><br>` + item.modifiers.map(mod =>
             `- ${mod.modifier_name} ($${mod.price.toFixed(2)} x ${mod.quantity})`
           ).join('<br>')
-        : `<strong>${item.name}</strong>`
+        : `<strong>${item.name} ($${item.price.toFixed(2)})</strong>`
     }))
 
-    items.push(
-      {
-        nameWithModifiers: '<strong>Surcharge</strong>',
-        line_item_total: `${surchargeAmount.value}`
-      },
-      {
-        nameWithModifiers: '<strong>Discount</strong>',
-        line_item_total: `${discountAmount.value}`
-      }
-    )
+    // Add surcharge row if surchargeAmount is greater than 0
+    // if (surchargeAmount.value !== '0.00') {
+    //   items.push({
+    //     nameWithModifiers: '<strong>Surcharge</strong>',
+    //     line_item_total: `${surchargeAmount.value}`
+    //   })
+    // }
+    // if (discountAmount.value !== '0.00') {
+    //   items.push({
+    //     nameWithModifiers: '<strong>Discount</strong>',
+    //     line_item_total: `${discountAmount.value}`
+    //   })
+    // }
 
     return items
   }
   return []
 })
+
+
 
 
 const columns = [
@@ -158,22 +173,19 @@ onMounted(() => {
 
 <style scoped>
 .q-table {
-  padding: 11px;
+  margin: 8px;
   width: 98%;
   height: calc(100vh - 240px);
   background-color: rgba(38, 36, 39, 0.034);
 }
 
 .summary-card {
-  background-color: #000000;
+  background-color: #3949AB;
   border-radius: 8px;
-  padding: 9px;
-  margin-top: 10px;
-}
+  }
 
 .summary-wrapper {
   padding: 9px;
-  width: 98%;
 }
 
 .total-section {
