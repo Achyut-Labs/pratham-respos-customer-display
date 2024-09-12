@@ -9,34 +9,69 @@
         binary-state-sort
         flat
         hide-bottom
-        :footer-props="footerProps"
         :pagination="pagination"
-      />
-      <div class="total-wrapper">
-        <q-card class="total-card">
+      >
+        <template v-slot:body-cell-nameWithModifiers="props">
+          <q-td :props="props">
+            <div class="bold-text">{{ props.row.nameWithModifiers }}</div>
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-quantity="props">
+          <q-td :props="props">
+            <div class="bold-text">{{ props.row.quantity }}</div>
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-line_item_total="props">
+          <q-td :props="props">
+            <div class="bold-text">${{ props.row.line_item_total }}</div>
+          </q-td>
+        </template>
+      </q-table>
+
+      <div class="summary-wrapper">
+        <q-card class="summary-card">
           <q-card-section>
-            <div class="text-center text-h6 text-white">
-              Total: {{ totalAmount }}
+            <div class="row q-col-gutter-md total-section">
+              <div class="col text-h6 text-bold text-white">Sub Total: </div>
+              <div class="col text-h6 text-right text-bold text-white">${{ subTotal }}</div>
+            </div>
+            <div class="row q-col-gutter-md total-section">
+              <div class="col text-h6 text-bold text-white">Total: </div>
+              <div class="col text-h6 text-right text-bold text-white">${{ totalAmount }}</div>
             </div>
           </q-card-section>
         </q-card>
       </div>
     </div>
-    <div class="col-6 image-container ">
+
+    <div class="col-6 image-container">
       <q-img src="src/assets/image.png" class="image-fit" />
     </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, computed } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { onCartUpdate } from '../boot/local-socket';
-import { OrderCart } from '../types/cart';
+import { OrderCart } from '../types/index';
 
 const cartItems = ref<OrderCart | null>(null)
 
-  const totalAmount = computed(() => {
-  return cartItems.value?.totalAmount ?? 0
+const totalAmount = computed(() => {
+  return cartItems.value?.totalAmount.toFixed(2) ?? '0.00'
+})
+const subTotal = computed(() => {
+  return cartItems.value?.subTotal.toFixed(2) ?? '0.00'
+})
+
+const surchargeAmount = computed(() => {
+  return cartItems.value?.surcharge_amount ? Number(cartItems.value.surcharge_amount).toFixed(2) : '0.00'
+})
+
+const discountAmount = computed(() => {
+  return cartItems.value?.discount ? Number(cartItems.value.discount).toFixed(2) : '0.00'
 })
 
 function updateCart(data: OrderCart) {
@@ -46,48 +81,53 @@ function updateCart(data: OrderCart) {
 
 const tableRows = computed(() => {
   if (cartItems.value) {
-    return [...cartItems.value.orderList]
+    const items = cartItems.value.orderList.map(item => ({
+      ...item,
+      nameWithModifiers: item.name + (item.modifiers.length > 0
+        ? '\n' + item.modifiers.map(mod =>
+            `- ${mod.modifier_name} ($${mod.price.toFixed(2)} * ${mod.quantity})`
+          ).join('\n')
+        : '')
+    }))
+
+    items.push(
+      {
+        nameWithModifiers: 'Surcharge',
+        line_item_total: `${surchargeAmount.value}`
+      },
+      {
+        nameWithModifiers: 'Discount',
+        line_item_total: `${discountAmount.value}`
+      }
+    )
+
+    return items
   }
   return []
 })
 
 const columns = [
   {
-    name: 'name',
+    name: 'nameWithModifiers',
     required: true,
-    label: 'Item',
+    label: 'Items',
     align: 'left' as const,
-    field: 'name',
-    headerClasses: 'text-bold'
+    field: 'nameWithModifiers',
+    style: 'white-space: pre-line;'
   },
   {
     name: 'quantity',
     label: 'Quantity',
     align: 'left' as const,
     field: 'quantity',
-    headerClasses: 'text-bold'
   },
   {
     name: 'line_item_total',
-    label: 'Price',
+    label: 'Total',
     align: 'right' as const,
-    field: 'line_item_total',
-    headerClasses: 'text-bold'
-  }
+    field: (row: { line_item_total: string; }) => row.line_item_total,
+   }
 ]
-
-
-const footerProps = {
-  bottom: true,
-  class: 'text-bold',
-  rows: [
-    {
-      name: 'Total',
-      quantity: '',
-      line_item_total: cartItems.value ? cartItems.value.totalAmount : 0
-    }
-  ]
-}
 
 const pagination = ref({
   rowsPerPage: 9990
@@ -98,53 +138,62 @@ onMounted(() => {
     updateCart(data)
   })
 })
-
-onUnmounted(() => {})
 </script>
 
 <style scoped>
 .q-table {
+  padding: 11px;
   width: 98%;
-  height: calc(100vh - 130px);
-  background-color: rgba(142, 0, 250, 0.123);
+  height: calc(100vh - 160px);
+  background-color: rgba(38, 36, 39, 0.034);
 }
 
-.total-card {
-  background-color: #003366;
+.summary-card {
+  background-color: #000000;
   border-radius: 8px;
-  padding: 16px;
+  padding: 9px;
+  margin-top: 10px;
 }
 
-.total-wrapper {
+.summary-wrapper {
+  padding: 9px;
   width: 98%;
-  margin-top: 16px;
+}
+
+.total-section {
+  padding-top: 5px;
+}
+
+.text-bold {
+  font-weight: bold;
+}
+
+.bold-text {
+  font-weight: bold;
 }
 
 .full-height {
-  height: 100vh; /* Full viewport height */
+  height: 100vh;
 }
 
 .image-container {
   display: flex;
-  align-items: center; /* Center the image vertically */
-  justify-content: center; /* Center the image horizontally */
-  height: 100vh; /* Set the container to the full screen height */
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
 
 .image-fit {
   max-height: 100%;
   max-width: 100%;
-  object-fit: contain; /* Ensure the image fits without cropping */
-}
-
-.full-height {
-  height: 100vh; /* Set the height to the full viewport height */
+  object-fit: contain;
 }
 
 .q-table__header .q-th {
   font-weight: bold;
 }
+
+.q-table__cell {
+  white-space: pre-line;
+}
 </style>
-
-
-
