@@ -1,6 +1,15 @@
 <template>
   <q-page class="row items-center justify-evenly full-height">
     <div class="col-6">
+      <div class="customer-info">
+        <div class="customer-detail">
+          <strong>Customer:</strong> {{ customer.name }}
+        </div>
+        <div class="customer-detail">
+          <strong>Daily Order:</strong> #{{ cartItems?.daily_order_number }}
+        </div>
+      </div>
+
       <q-table
         :rows="tableRows"
         :columns="columns"
@@ -52,13 +61,16 @@
   </q-page>
 </template>
 
+
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
 import { onCartUpdate } from '../boot/local-socket';
-import { OrderCart } from '../types/index';
+import { OrderCart, Customer } from '../types/index';
 
 const cartItems = ref<OrderCart | null>(null)
+const customer = ref<Customer>({ name: '', email: '', phone_no: '', id: 0 });
 
+// Computed values for surcharge, discount, and total
 const totalAmount = computed(() => {
   return cartItems.value?.totalAmount.toFixed(2) ?? '0.00'
 })
@@ -77,6 +89,7 @@ const discountAmount = computed(() => {
 function updateCart(data: OrderCart) {
   console.log(data)
   cartItems.value = { ...data }
+  customer.value = data.customer;
 }
 
 const tableRows = computed(() => {
@@ -135,16 +148,18 @@ const pagination = ref({
 
 onMounted(() => {
   onCartUpdate(data => {
-    updateCart(data)
+    return updateCart(data);
   })
 })
 </script>
+
+
 
 <style scoped>
 .q-table {
   padding: 11px;
   width: 98%;
-  height: calc(100vh - 160px);
+  height: calc(100vh - 240px);
   background-color: rgba(38, 36, 39, 0.034);
 }
 
@@ -196,4 +211,17 @@ onMounted(() => {
 .q-table__cell {
   white-space: pre-line;
 }
+
+.customer-info {
+  padding: 6px;
+  background-color: #f0f0f0;
+  margin-bottom: 12px;
+  border-radius: 5px;
+}
+
+.customer-detail {
+  font-size: 16px;
+  font-weight: bold;
+}
 </style>
+
