@@ -20,11 +20,11 @@
         hide-bottom
         :pagination="pagination"
       >
-        <template v-slot:body-cell-nameWithModifiers="props">
-          <q-td :props="props">
-            <div class="bold-text">{{ props.row.nameWithModifiers }}</div>
-          </q-td>
-        </template>
+      <template v-slot:body-cell-nameWithModifiers="props">
+        <q-td :props="props">
+          <div v-html="props.row.nameWithModifiers"></div>
+        </q-td>
+      </template>
 
         <template v-slot:body-cell-quantity="props">
           <q-td :props="props">
@@ -96,20 +96,20 @@ const tableRows = computed(() => {
   if (cartItems.value) {
     const items = cartItems.value.orderList.map(item => ({
       ...item,
-      nameWithModifiers: item.name + (item.modifiers.length > 0
-        ? '\n' + item.modifiers.map(mod =>
-            `- ${mod.modifier_name} ($${mod.price.toFixed(2)} * ${mod.quantity})`
-          ).join('\n')
-        : '')
+      nameWithModifiers: item.modifiers.length > 0
+        ? `<strong>${item.name}</strong><br>` + item.modifiers.map(mod =>
+            `- ${mod.modifier_name} ($${mod.price.toFixed(2)} x ${mod.quantity})`
+          ).join('<br>')
+        : `<strong>${item.name}</strong>`
     }))
 
     items.push(
       {
-        nameWithModifiers: 'Surcharge',
+        nameWithModifiers: '<strong>Surcharge</strong>',
         line_item_total: `${surchargeAmount.value}`
       },
       {
-        nameWithModifiers: 'Discount',
+        nameWithModifiers: '<strong>Discount</strong>',
         line_item_total: `${discountAmount.value}`
       }
     )
@@ -118,6 +118,7 @@ const tableRows = computed(() => {
   }
   return []
 })
+
 
 const columns = [
   {
