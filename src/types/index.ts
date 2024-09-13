@@ -1,4 +1,4 @@
-export interface Modifier {
+export interface OrderModifier {
   modifier_name: string;
   price: number;
   quantity: number;
@@ -7,24 +7,29 @@ export interface Modifier {
 export interface OrderItem {
   id: number;
   name: string;
-  modifiers: Modifier[];
+  price: number;
+  quantity: number;
+  line_item_total: number;
+  notes?: string;
+  modifiers: OrderModifier[];
 }
-type NewType = string;
 
 export interface Customer {
+  id: number;
   name: string;
   email: string;
   phone_no: string;
-  customer: unknown;
-  id: NewType;
-  modifiers: Modifier[];
 }
 
 export interface OrderCart {
-  customer: string;
+  customer: Customer | null;
   subTotal: number;
   totalAmount: number;
   surcharge_amount: number;
+  surcharge_type: number;
   discount: number;
+  discount_type: number;
+  orderId: string;
+  daily_order_number: string;
   orderList: OrderItem[];
 }

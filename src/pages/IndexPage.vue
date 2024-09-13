@@ -2,7 +2,7 @@
   <q-page class="row items-center justify-evenly full-height">
     <div class="col-6">
       <div class="customer-details text-center">
-        <strong></strong> {{ customer.name || 'Guest' }}
+        <strong></strong> {{ customer?.name || 'Guest' }}
       </div>
       <div class="customer-info">
         <div class="row justify-between customer-detail">
@@ -14,8 +14,6 @@
           </div>
         </div>
       </div>
-
-
       <q-table
         :rows="tableRows"
         :columns="columns"
@@ -41,6 +39,12 @@
         <template v-slot:body-cell-line_item_total="props">
           <q-td :props="props">
             <div class="bold-text">${{ props.row.line_item_total }}</div>
+          </q-td>
+        </template>
+
+        <template v-slot:no-data>
+          <q-td colspan="100%">
+            <div class="text-center">No data available</div>
           </q-td>
         </template>
       </q-table>
@@ -81,20 +85,21 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed } from 'vue';
 import { onCartUpdate } from '../boot/local-socket';
 import { OrderCart, Customer } from '../types/index';
 
 const cartItems = ref<OrderCart | null>(null)
-const customer = ref<Customer>({ name: '', email: '', phone_no: '', id: 0 });
-
-const totalAmount = computed(() => {
-  return cartItems.value?.totalAmount.toFixed(2) ?? '0.00'
-})
+const customer = ref<Customer>({ id: 0, name: 'Guest', email: '', phone_no: '' });
 
 const subTotal = computed(() => {
-  return cartItems.value?.subTotal.toFixed(2) ?? '0.00'
-})
+  return cartItems.value?.subTotal?.toFixed(2) ?? '0.00';
+});
+
+const totalAmount = computed(() => {
+  return cartItems.value?.totalAmount?.toFixed(2) ?? '0.00';
+});
+
 
 const surchargeAmount = computed(() => {
   const amount = cartItems.value?.surcharge_amount ?? 0
@@ -110,25 +115,41 @@ const discountAmount = computed(() => {
     : `${amount}%`
 })
 
-function updateCart(data: OrderCart) {
+const updateCart = (data: OrderCart) => {
   console.log(data)
-  cartItems.value = { ...data }
-  customer.value = data.customer;
+  if (data) {
+    cartItems.value = {
+      ...data,
+      surcharge_amount: data.surcharge_amount ?? 0,
+      discount: data.discount ?? 0,
+    };
+    customer.value = data.customer || { id: 0, name: 'Guest', email: '', phone_no: '' };
+  }
+};
+try {
+} catch (error) {
+  console.error('Error during data update:', error);
 }
 
 const tableRows = computed(() => {
-  if (cartItems.value) {
-    const items = cartItems.value.orderList.map(item => {
-      let nameWithModifiers = `<strong>${item.name} ($${item.price.toFixed(2)})</strong>`
+  if (cartItems.value && Array.isArray(cartItems.value.orderList)) {
+    return cartItems.value.orderList.map(item => {
+      const price = item.price != null ? item.price : 0;
+
+      const modifiers = Array.isArray(item.modifiers) ? item.modifiers : [];
+
+      let nameWithModifiers = `<strong>${item.name} ($${price.toFixed(2)})</strong>`
 
       if (item.notes && item.notes.trim()) {
         nameWithModifiers += `<br><e style="color: brown; font-weight: bold;">${item.notes}</e>`
       }
 
-      if (item.modifiers.length > 0) {
-        nameWithModifiers += '<br>' + item.modifiers.map(mod =>
-          `- ${mod.modifier_name} ($${mod.price.toFixed(2)} x ${mod.quantity})`
-        ).join('<br>')
+      if (modifiers.length > 0) {
+        nameWithModifiers += '<br>' + modifiers.map(mod => {
+          const modifierPrice = mod.price != null ? mod.price : 0;
+          const modifierQuantity = mod.quantity != null ? mod.quantity : 0;
+          return `- ${mod.modifier_name} ($${modifierPrice.toFixed(2)} x ${modifierQuantity})`
+        }).join('<br>')
       }
 
       return {
@@ -136,8 +157,6 @@ const tableRows = computed(() => {
         nameWithModifiers
       }
     })
-
-    return items
   }
   return []
 })
@@ -171,14 +190,28 @@ const pagination = ref({
 })
 
 onMounted(() => {
-  onCartUpdate(data => {
-    return updateCart(data);
-  })
-})
+  onCartUpdate(function (data: OrderCart): void {
+    updateCart(data)
+  });
+});
 </script>
 
 
+
 <style scoped>
+.image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.image-fit {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
 .q-table {
   margin: 8px;
   width: 98%;
@@ -211,18 +244,7 @@ onMounted(() => {
   height: 100vh;
 }
 
-.image-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-}
 
-.image-fit {
-  max-height: 100%;
-  max-width: 100%;
-  object-fit: contain;
-}
 
 .q-table__header .q-th {
   font-weight: bold;
