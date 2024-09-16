@@ -56,17 +56,17 @@
               <div class="col text-h8 text-bold text-white">Sub Total: </div>
               <div class="col text-h8 text-right text-bold text-white">${{ subTotal }}</div>
             </div>
-            <div v-if="surchargeAmount !== '0.00'" class="row q-col-gutter-md total-section">
+            <div v-if="surchargeAmount !== null" class="row q-col-gutter-md total-section">
               <div class="col text-h8 text-bold text-white">Surcharge: </div>
               <div class="col text-h8 text-right text-bold text-white">
-                + {{ surchargeAmount }}{{ cartItems?.surcharge_type === 0 ? '%' : '' }}
+                 {{ surchargeAmount }}
               </div>
             </div>
 
-            <div v-if="discountAmount !== '0.00'" class="row q-col-gutter-md total-section">
+            <div v-if="discountAmount !== null" class="row q-col-gutter-md total-section">
               <div class="col text-h8 text-bold text-white">Discount: </div>
               <div class="col text-h8 text-right text-bold text-white">
-                - {{ discountAmount }}{{ cartItems?.discount_type === 0 ? '%' : '' }}
+                 {{ discountAmount }}
               </div>
             </div>
             <div class="row q-col-gutter-md total-section">
@@ -102,18 +102,21 @@ const totalAmount = computed(() => {
 
 
 const surchargeAmount = computed(() => {
-  const amount = cartItems.value?.surcharge_amount ?? 0
+  const amount = cartItems.value?.surcharge_amount ?? 0;
+  if (amount === 0) return null;
   return cartItems.value?.surcharge_type === 1
-    ? `$${amount}`
-    : `${amount}%`
-})
+    ? `+ $${amount.toFixed(2)}`
+    : `${amount}%`;
+});
 
 const discountAmount = computed(() => {
-  const amount = cartItems.value?.discount ?? 0
+  const amount = cartItems.value?.discount ?? 0;
+  if (amount === 0) return null;
   return cartItems.value?.discount_type === 1
-    ? `$${amount}`
-    : `${amount}%`
-})
+    ? `- $${amount.toFixed(2)}`
+    : `${amount}%`;
+});
+
 
 const updateCart = (data: OrderCart) => {
   console.log(data)
