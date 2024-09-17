@@ -25,11 +25,13 @@ export interface OrderCart {
   customer: Customer | null;
   subTotal: number;
   totalAmount: number;
-  surcharge_amount: number;
-  surcharge_type: number;
+  surcharge_amount?: number;
+  surcharge_type: number;  // Ensure this is just number
   discount: number;
   discount_type: number;
   orderId: string;
   daily_order_number: string;
   orderList: OrderItem[];
 }
+
+
