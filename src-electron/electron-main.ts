@@ -38,6 +38,10 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = undefined;
   });
+
+  mainWindow.setMenuBarVisibility(false)
+  mainWindow.maximize()
+
 }
 
 app.whenReady().then(createWindow);

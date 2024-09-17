@@ -2,7 +2,7 @@
 import { io } from 'socket.io-client'
 import { OrderCart } from 'src/types/cart'
 
-const socketUrl = 'http://' + process.env.LOCAL_SOCKET_SERVER_IP  + ':5000'
+const socketUrl = 'http://' + process.env.LOCAL_SOCKET_SERVER_IP  + ':3000'
 // const socket = io('http//localhost:6000')
 // const socket = io(socketUrl, {
 //   transports: ['websocket']
@@ -33,7 +33,7 @@ socket.on('connection', data => {
  * this funciton will listen's for online orders
  * @param fn - callback function when new online order is received
  */
-export const onCartUpdate = (fn: (data: OrderCart, ...args: unknown[]) => void) => {
+export const onCartUpdate = (fn: (data: OrderCart) => void) => {
   if (typeof fn !== 'function') {
     throw new Error('`fn` is not a function')
   }
