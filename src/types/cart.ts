@@ -118,7 +118,28 @@ export interface CartOrderPayment {
   status: number
   tag?: string
 }
+export interface OrderModifier {
+  modifier_name: string;
+  price: number;
+  quantity: number;
+}
 
+export interface OrderItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+  line_item_total: number;
+  notes?: string;
+  modifiers: OrderModifier[];
+}
+
+export interface Customer {
+  id: number;
+  name: string;
+  email: string;
+  phone_no: string;
+}
 export interface OrderCart {
   restaurant_id: number
   full_order_id?: string
@@ -133,7 +154,7 @@ export interface OrderCart {
   orderList: CartLineItem[]
   delivery_charge?: number | null
   surcharge_amount?: number
-  surcharge_type?: AMOUNT_TYPES
+  surcharge_type: number;
   discount?: number
   isFlatDiscount?: AMOUNT_TYPES
   discount_type?: number

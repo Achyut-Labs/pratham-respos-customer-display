@@ -81,8 +81,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { onCartUpdate } from '../boot/local-socket';
-import { Customer } from '../types/index';
-import { OrderCart } from '../types/index';
+import { Customer,OrderCart } from '../types/cart';
 import { QTableColumn } from 'quasar';
 
 const cartItems = ref<OrderCart | null>(null)
