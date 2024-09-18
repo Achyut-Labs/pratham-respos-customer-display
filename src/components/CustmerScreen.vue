@@ -1,15 +1,14 @@
 <template>
   <div class="col-6">
-    <div class="customer-details text-center">
-      <strong></strong> {{ customer?.name || 'Guest' }}
+    <div class="text-h5 text-bold text-center q-px-sm q-pb-sm q-pt-none">
+      <div class="q-pa-sm bg-primary text-white rounded-borders">
+        {{ customer?.name || 'Guest' }} {{ cartItems && cartItems.daily_order_number ? '- #' + cartItems.daily_order_number: '' }}
+      </div>
     </div>
-    <div class="customer-info">
-      <div class="row justify-between customer-detail">
+    <div class="">
+      <div class="row justify-between q-pa-sm bg-grey-3">
         <div class="col-auto text-left">
-          <strong>Customer Id:</strong> {{ cartItems?.orderId }}
-        </div>
-        <div class="col-auto text-right">
-          <strong>Order Id:</strong> #{{ cartItems?.daily_order_number }}
+          <strong>Order Id:</strong> {{ cartItems?.orderId }}
         </div>
       </div>
     </div>
@@ -31,13 +30,13 @@
 
       <template v-slot:body-cell-quantity="props">
         <q-td :props="props">
-          <div class="bold-text">{{ props.row.quantity }}</div>
+          <div class="text-bold">{{ props.row.quantity }}</div>
         </q-td>
       </template>
 
       <template v-slot:body-cell-line_item_total="props">
         <q-td :props="props">
-          <div class="bold-text">${{ props.row.line_item_total }}</div>
+          <div class="text-bold">${{ parseFloat(props.row.line_item_total).toFixed(2) }}</div>
         </q-td>
       </template>
 
@@ -48,7 +47,7 @@
       </template>
     </q-table>
 
-    <div class="summary-wrapper">
+    <div class="q-pa-sm">
       <CardTotal
         :subTotal="subTotal"
         :surchargeAmount="surchargeAmount"
@@ -84,7 +83,7 @@ const updateCart = (data: OrderCart) => {
   customer.value = data.customer || { id: 0, name: 'Guest', email: '', phone_no: '' };
 };
 
-const tableRows = computed(() => cartItems.value?.orderList.map(item => ({
+const tableRows = computed(() => cartItems.value?.orderList?.map(item => ({
   ...item,
   nameWithModifiers: `<strong>${item.name} ($${(item.price ?? 0).toFixed(2)})</strong>${item.notes ? `<br><e style="color: brown; font-weight: bold;">${item.notes}</e>` : ''}${item.modifiers?.map(mod => `<br>- ${mod.modifier_name} ($${(mod.price ?? 0).toFixed(2)} x ${mod.quantity})`).join('')}`
 })) ?? []);
@@ -109,31 +108,5 @@ onMounted(() => {
   width: 98%;
   height: calc(100vh - 300px);
   background-color: rgba(38, 36, 39, 0.034);
-}
-
-.summary-wrapper {
-  padding: 9px;
-}
-
-.bold-text {
-  font-weight: bold;
-}
-
-.customer-info {
-  padding: 6px;
-  background-color: #f0f0f0;
-  margin-bottom: 12px;
-  border-radius: 5px;
-}
-
-.customer-details {
-  font-size: 24px;
-  text-transform: uppercase;
-  font-weight: bold;
-}
-
-.customer-detail {
-  font-size: 16px;
-  font-weight: bold;
 }
 </style>

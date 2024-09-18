@@ -1,28 +1,28 @@
 <template>
-  <q-card class="summary-card">
+  <q-card class="bg-primary rounded-borders">
     <q-card-section>
-      <div class="row q-col-gutter-md total-section">
+      <div class="row q-col-gutter-md">
         <div class="col text-h8 text-bold text-white">Sub Total: </div>
-        <div class="col text-h8 text-right text-bold text-white">${{ subTotal }}</div>
+        <div class="col text-h8 text-right text-bold text-white">${{ parseFloat(subTotal as string).toFixed(2) }}</div>
       </div>
 
-      <div v-if="surchargeAmount && surchargeAmount !== '0'" class="row q-col-gutter-md total-section">
+      <div class="row q-col-gutter-md ">
         <div class="col text-h8 text-bold text-white">Surcharge: </div>
         <div class="col text-h8 text-right text-bold text-white">
-           {{ surchargeAmount }}
+           {{ surchargeAmount ? surchargeAmount : 0 }}
         </div>
       </div>
 
-      <div v-if="discountAmount && discountAmount !== '0'" class="row q-col-gutter-md total-section">
+      <div class="row q-col-gutter-md ">
         <div class="col text-h8 text-bold text-white">Discount: </div>
         <div class="col text-h8 text-right text-bold text-white">
-           {{ discountAmount }}
+           {{ discountAmount ? discountAmount : 0 }}
         </div>
       </div><hr/>
-      <div class="row q-col-gutter-md total-section">
+      <div class="row q-col-gutter-md ">
         <div class="col text-h4 text-bold text-white">Total: </div>
-        <div class="col text-h4 text-right text-bold text-white">${{ totalAmount }}</div>
-      </div><hr/>
+        <div class="col text-h4 text-right text-bold text-white">${{ parseFloat(totalAmount as string).toFixed(2) }}</div>
+      </div>
     </q-card-section>
   </q-card>
 </template>
@@ -37,16 +37,4 @@ defineProps({
 </script>
 
 <style scoped>
-.summary-card {
-  background-color: #3949AB;
-  border-radius: 8px;
-}
-
-.total-section {
-  padding-top: 5px;
-}
-
-.text-bold {
-  font-weight: bold;
-}
 </style>
