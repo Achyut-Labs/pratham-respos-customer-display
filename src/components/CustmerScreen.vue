@@ -49,31 +49,12 @@
     </q-table>
 
     <div class="summary-wrapper">
-      <q-card class="summary-card">
-        <q-card-section>
-          <div class="row q-col-gutter-md total-section">
-            <div class="col text-h8 text-bold text-white">Sub Total: </div>
-            <div class="col text-h8 text-right text-bold text-white">${{ subTotal }}</div>
-          </div>
-          <div v-if="surchargeAmount !== null" class="row q-col-gutter-md total-section">
-            <div class="col text-h8 text-bold text-white">Surcharge: </div>
-            <div class="col text-h8 text-right text-bold text-white">
-               {{ surchargeAmount }}
-            </div>
-          </div>
-
-          <div v-if="discountAmount !== null" class="row q-col-gutter-md total-section">
-            <div class="col text-h8 text-bold text-white">Discount: </div>
-            <div class="col text-h8 text-right text-bold text-white">
-               {{ discountAmount }}
-            </div>
-          </div>
-          <div class="row q-col-gutter-md total-section">
-            <div class="col text-h4 text-bold text-white">Total: </div>
-            <div class="col text-h4 text-right text-bold text-white">${{ totalAmount }}</div>
-          </div>
-        </q-card-section>
-      </q-card>
+      <CardTotal
+        :subTotal="subTotal"
+        :surchargeAmount="surchargeAmount"
+        :discountAmount="discountAmount"
+        :totalAmount="totalAmount"
+      />
     </div>
   </div>
 </template>
@@ -82,6 +63,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { onCartUpdate } from '../boot/local-socket';
 import { Customer,OrderCart } from '../types/cart';
+import CardTotal from 'src/components/Table/CardTotal.vue';
 import { QTableColumn } from 'quasar';
 
 const cartItems = ref<OrderCart | null>(null)
@@ -97,19 +79,18 @@ const totalAmount = computed(() => {
 
 const surchargeAmount = computed(() => {
   const amount = cartItems.value?.surcharge_amount ?? 0;
-  if (amount === 0) return null;
+  if (amount === 0) return undefined;
   return cartItems.value?.surcharge_type === 1
     ? `+ $${amount.toFixed(2)}`
-    : `${amount}%`;
+    : `+ ${amount}%`;
 });
-
 
 const discountAmount = computed(() => {
   const amount = cartItems.value?.discount ?? 0;
-  if (amount === 0) return null;
+  if (amount === 0) return undefined;
   return cartItems.value?.discount_type === 1
     ? `- $${amount.toFixed(2)}`
-    : `${amount}%`;
+    : `+ ${amount}%`;
 });
 
 const updateCart = (data: OrderCart) => {
@@ -192,41 +173,16 @@ onMounted(() => {
 .q-table {
   margin: 8px;
   width: 98%;
-  height: calc(100vh - 270px);
+  height: calc(100vh - 300px);
   background-color: rgba(38, 36, 39, 0.034);
-}
-
-.summary-card {
-  background-color: #3949AB;
-  border-radius: 8px;
 }
 
 .summary-wrapper {
   padding: 9px;
 }
 
-.total-section {
-  padding-top: 5px;
-}
-
-.text-bold {
-  font-weight: bold;
-}
-
 .bold-text {
   font-weight: bold;
-}
-
-.full-height {
-  height: 100vh;
-}
-
-.q-table__header .q-th {
-  font-weight: bold;
-}
-
-.q-table__cell {
-  white-space: pre-line;
 }
 
 .customer-info {
