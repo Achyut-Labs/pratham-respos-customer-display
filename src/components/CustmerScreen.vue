@@ -62,109 +62,43 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { onCartUpdate } from '../boot/local-socket';
-import { Customer,OrderCart } from '../types/cart';
+import { Customer, OrderCart } from '../types/cart';
 import CardTotal from 'src/components/Table/CardTotal.vue';
 import { QTableColumn } from 'quasar';
 
-const cartItems = ref<OrderCart | null>(null)
+const cartItems = ref<OrderCart | null>(null);
 const customer = ref<Customer>({ id: 0, name: 'Guest', email: '', phone_no: '' });
 
-const subTotal = computed(() => {
-  return cartItems.value?.subTotal?.toFixed(2) ?? '0.00';
-});
-
-const totalAmount = computed(() => {
-  return cartItems.value?.totalAmount?.toFixed(2) ?? '0.00';
-});
-
-const surchargeAmount = computed(() => {
-  const amount = cartItems.value?.surcharge_amount ?? 0;
+const subTotal = computed(() => cartItems.value?.subTotal?.toFixed(2) ?? '0.00');
+const totalAmount = computed(() => cartItems.value?.totalAmount?.toFixed(2) ?? '0.00');
+const formatAmount = (amount: number, type: number, isSurcharge: boolean) => {
   if (amount === 0) return undefined;
-  return cartItems.value?.surcharge_type === 1
-    ? `+ $${amount.toFixed(2)}`
-    : `+ ${amount}%`;
-});
-
-const discountAmount = computed(() => {
-  const amount = cartItems.value?.discount ?? 0;
-  if (amount === 0) return undefined;
-  return cartItems.value?.discount_type === 1
-    ? `- $${amount.toFixed(2)}`
-    : `+ ${amount}%`;
-});
+  const sign = isSurcharge ? '+' : '-';
+  return type === 1 ? `${sign} $${amount.toFixed(2)}` : `${sign} ${amount}%`;
+};
+const surchargeAmount = computed(() => formatAmount(cartItems.value?.surcharge_amount ?? 0, cartItems.value?.surcharge_type ?? 0, true));
+const discountAmount = computed(() => formatAmount(cartItems.value?.discount ?? 0, cartItems.value?.discount_type ?? 0, false));
 
 const updateCart = (data: OrderCart) => {
-  if (data) {
-    cartItems.value = {
-      ...data,
-      surcharge_amount: data.surcharge_amount ?? 0,
-      surcharge_type: data.surcharge_type ?? 0,
-      discount: data.discount ?? 0,
-    };
-    customer.value = data.customer || { id: 0, name: 'Guest', email: '', phone_no: '' };
-  }
+  cartItems.value = { ...data, surcharge_amount: data.surcharge_amount ?? 0, surcharge_type: data.surcharge_type ?? 0, discount: data.discount ?? 0 };
+  customer.value = data.customer || { id: 0, name: 'Guest', email: '', phone_no: '' };
 };
 
-const tableRows = computed(() => {
-  if (cartItems.value && Array.isArray(cartItems.value.orderList)) {
-    return cartItems.value.orderList.map(item => {
-      const price = item.price != null ? item.price : 0;
-      const modifiers = Array.isArray(item.modifiers) ? item.modifiers : [];
-      let nameWithModifiers = `<strong>${item.name} ($${price.toFixed(2)})</strong>`;
-
-      if (item.notes && item.notes.trim()) {
-        nameWithModifiers += `<br><e style="color: brown; font-weight: bold;">${item.notes}</e>`;
-      }
-
-      if (modifiers.length > 0) {
-        nameWithModifiers += '<br>' + modifiers.map(mod => {
-          const modifierPrice = mod.price != null ? mod.price : 0;
-          const modifierQuantity = mod.quantity != null ? mod.quantity : 0;
-          return `- ${mod.modifier_name} ($${modifierPrice.toFixed(2)} x ${modifierQuantity})`;
-        }).join('<br>');
-      }
-
-      return {
-        ...item,
-        nameWithModifiers
-      };
-    });
-  }
-  return [];
-});
+const tableRows = computed(() => cartItems.value?.orderList.map(item => ({
+  ...item,
+  nameWithModifiers: `<strong>${item.name} ($${(item.price ?? 0).toFixed(2)})</strong>${item.notes ? `<br><e style="color: brown; font-weight: bold;">${item.notes}</e>` : ''}${item.modifiers?.map(mod => `<br>- ${mod.modifier_name} ($${(mod.price ?? 0).toFixed(2)} x ${mod.quantity})`).join('')}`
+})) ?? []);
 
 const columns: QTableColumn[] = [
-  {
-    name: 'nameWithModifiers',
-    required: true,
-    label: 'Items',
-    align: 'left',
-    field: 'nameWithModifiers'
-  },
-  {
-    name: 'quantity',
-    label: 'Quantity',
-    align: 'center',
-    field: 'quantity'
-  },
-  {
-    name: 'line_item_total',
-    label: 'Total',
-    align: 'right',
-    field: (row: { line_item_total: number }) => row.line_item_total
-  }
+  { name: 'nameWithModifiers', required: true, label: 'Items', align: 'left', field: 'nameWithModifiers' },
+  { name: 'quantity', label: 'Quantity', align: 'center', field: 'quantity' },
+  { name: 'line_item_total', label: 'Total', align: 'right', field: 'line_item_total' }
 ];
 
-
-
-const pagination = ref({
-  rowsPerPage: 9990
-});
+const pagination = ref({ rowsPerPage: 9990 });
 
 onMounted(() => {
-  onCartUpdate(function (data: OrderCart): void {
-    updateCart(data);
-  });
+  onCartUpdate(updateCart);
 });
 
 </script>
