@@ -1,49 +1,63 @@
-// import { env } from 'process'
-import { io } from 'socket.io-client'
+import { io, Socket } from 'socket.io-client'
+import { boot } from 'quasar/wrappers'
 import { OrderCart } from 'src/types/cart'
+import { Router } from 'vue-router'
 
-const socketUrl = 'http://' + process.env.LOCAL_SOCKET_SERVER_IP  + ':3000'
-// const socket = io('http//localhost:6000')
-// const socket = io(socketUrl, {
-//   transports: ['websocket']
-// })
-// Listen for the 'connection' event
-// const socketUrl = 'http://localhost:3000'
-const socket = io(socketUrl)
-socket.on('connect', () => {
-  console.log('Connected to the local socket')
-})
+let socket: Socket | null = null
 
-// Handle any errors
-socket.on('connect_error', error => {
-  console.error('Local Soacket Connection error:', error.message)
-})
+export const connectSocket = (ip: string, router: Router) => {
+  const socketUrl = `http://${ip}:3000`
 
-// Handle disconnection
-socket.on('disconnect', () => {
-  console.log('Disconnected from the local socket')
-})
+  socket = io(socketUrl)
 
-// Define the event handler for the 'connection' event
-socket.on('connection', data => {
-  console.log('connection:', data)
-})
+  socket.on('connect', () => {
+    console.log('Connected to the local socket')
+    router.push('/')  // Navigate to the main page on successful connection
+  })
 
-/**
- * this funciton will listen's for online orders
- * @param fn - callback function when new online order is received
- */
+  socket.on('connect_error', (error) => {
+    console.error('Local Socket Connection error:', error.message)
+    // Handle the error, potentially redirect to IP input page
+  })
+
+  socket.on('disconnect', () => {
+    console.log('Disconnected from the local socket')
+  })
+
+  // Listen for the 'update-cart' event
+  socket.on('update-cart', (data: OrderCart) => {
+    console.log('Received cart update:', data)
+    onCartUpdateCallback?.(data)
+  })
+
+  // Listen for the 'connection' event
+  socket.on('connection', (data) => {
+    console.log('Connection event:', data)
+  })
+
+  // Disconnect the client upon page unload
+  window.addEventListener('beforeunload', () => {
+    socket?.disconnect()
+  })
+}
+
+// Callback function to handle 'update-cart'
+let onCartUpdateCallback: ((data: OrderCart) => void) | null = null
+
 export const onCartUpdate = (fn: (data: OrderCart) => void) => {
   if (typeof fn !== 'function') {
     throw new Error('`fn` is not a function')
   }
-  socket.on('update-cart', fn)
+  onCartUpdateCallback = fn
 }
-// Disconnect the client upon page unload
-window.addEventListener('beforeunload', () => {
-  socket.disconnect()
-})
 
-// Connect to the Socket.IO server
-socket.connect()
-export default socket
+// Boot function to ensure socket connects based on stored IP
+export default boot(({ router }) => {
+  const storedIp = localStorage.getItem('localSocketServerIp')
+
+  if (storedIp) {
+    connectSocket(storedIp, router)
+  } else {
+    router.push('/start')  // Redirect to IP input page if no IP is found
+  }
+})
