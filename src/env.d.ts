@@ -6,6 +6,7 @@ declare namespace NodeJS {
     VUE_ROUTER_MODE: 'hash' | 'history' | 'abstract' | undefined;
     VUE_ROUTER_BASE: string | undefined;
 
-    LOCAL_SOCKET_SERVER_IP: string
+    LOCAL_SOCKET_SERVER_IP: string,
+    API_BASE_URL: string
   }
 }

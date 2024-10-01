@@ -1,5 +1,5 @@
 <template>
-  <div class="col-6">
+  <div class=" ">
     <div class="text-h5 text-bold text-center q-px-sm q-pb-sm q-pt-none">
       <div class="q-pa-sm bg-primary text-white rounded-borders">
         {{ cartItems?.customer?.name || cartItems?.guestCustomerName || 'Guest' }} {{ cartItems && cartItems.daily_order_number ? '- #' + cartItems.daily_order_number: '' }}
