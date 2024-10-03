@@ -2,20 +2,20 @@
   <q-card class="bg-primary rounded-borders">
     <q-card-section>
       <div class="row q-col-gutter-md">
-        <div class="col text-h8 text-bold text-white">Sub Total: </div>
-        <div class="col text-h8 text-right text-bold text-white">${{ parseFloat(subTotal as string).toFixed(2) }}</div>
+        <div class="col text-bold text-white font-17">Sub Total: </div>
+        <div class="col text-right text-bold text-white font-17">${{ parseFloat(subTotal as string).toFixed(2) }}</div>
       </div>
 
       <div class="row q-col-gutter-md ">
-        <div class="col text-h8 text-bold text-white">Surcharge: </div>
-        <div class="col text-h8 text-right text-bold text-white">
+        <div class="col font-17 text-bold text-white">Surcharge: </div>
+        <div class="col font-17 text-right text-bold text-white">
            {{ surchargeAmount ? surchargeAmount : 0 }}
         </div>
       </div>
 
       <div class="row q-col-gutter-md ">
-        <div class="col text-h8 text-bold text-white">Discount: </div>
-        <div class="col text-h8 text-right text-bold text-white">
+        <div class="col font-17 text-bold text-white">Discount: </div>
+        <div class="col font-17 text-right text-bold text-white">
            {{ discountAmount ? discountAmount : 0 }}
         </div>
       </div><hr/>
@@ -37,4 +37,7 @@ defineProps({
 </script>
 
 <style scoped>
+.font-17{
+  font-size: 17px
+}
 </style>

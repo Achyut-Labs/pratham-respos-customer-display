@@ -1,22 +1,18 @@
 <template>
   <div class=" ">
-    <div class="text-h5 text-bold text-center q-px-sm q-pb-sm q-pt-none">
-      <div class="q-pa-sm bg-primary text-white rounded-borders">
-        {{ cartItems?.customer?.name || cartItems?.guestCustomerName || 'Guest' }} {{ cartItems && cartItems.daily_order_number ? '- #' + cartItems.daily_order_number: '' }}
+    <div class="flex text-h5 bg-primary text-bold q-px-sm q-pb-sm q-pt-none mx-1 rounded-borders">
+      <div class="col q-pa-sm  text-white ">
+        {{ cartItems?.customer?.name || cartItems?.guestCustomerName || 'Guest' }}
       </div>
-    </div>
-    <div class="">
-      <div class="row justify-between q-pa-sm bg-grey-3">
-        <div class="col-auto text-left">
-          <strong>Order Id:</strong> {{ cartItems?.orderId }}
-        </div>
+      <div class="col q-pa-sm  text-white text-right">
+        {{ cartItems && cartItems.daily_order_number ? cartItems.daily_order_number: '' }}
       </div>
     </div>
     <q-table
       :rows="tableRows"
       :columns="columns"
       row-key="id"
-      class="q-table"
+      class="table-layout"
       binary-state-sort
       flat
       hide-bottom
@@ -103,10 +99,13 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.q-table {
+.table-layout {
   margin: 8px;
   width: 98%;
-  height: calc(100vh - 300px);
+  height: calc(100vh - 230px);
   background-color: rgba(38, 36, 39, 0.034);
+}
+.q-table tbody td {
+  font-size: 16px;
 }
 </style>
