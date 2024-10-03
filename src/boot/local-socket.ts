@@ -6,8 +6,8 @@ import { Router } from 'vue-router'
 
 let socket: Socket | null = null
 
-export const connectSocket = (ip: string, router: Router) => {
-  const socketUrl = `http://${ip}:3000`
+export const connectSocket = (ip: string, port: number, router: Router) => {
+  const socketUrl = `http://${ip}:${port}`
 
   socket = io(socketUrl)
 
@@ -70,9 +70,10 @@ export const onMediaSettingsUpdate = (fn: (data: MediaSettings) => void) => {
 // Boot function to ensure socket connects based on stored IP
 export default boot(({ router }) => {
   const storedIp = localStorage.getItem('localSocketServerIp')
+  const storedPortNumber = Number(localStorage.getItem('localSocketServerPort'))
 
   if (storedIp) {
-    connectSocket(storedIp, router)
+    connectSocket(storedIp, storedPortNumber, router)
   } else {
     router.push('/start')  // Redirect to IP input page if no IP is found
   }

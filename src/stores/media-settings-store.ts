@@ -16,7 +16,7 @@ export const useMediaSettingsStore = defineStore('customer', {
   state: (): State => ({
     restaurantId: localStorage.getItem('RestaurantId') ? Number(localStorage.getItem('RestaurantId')) : null,
     screenSize: localStorage.getItem('ScreenSize') ? Number(localStorage.getItem('ScreenSize')) : 50,
-    group: localStorage.getItem('ScreenSize') ? Number(localStorage.getItem('ScreenSize')) : null,
+    group: localStorage.getItem('group') ? Number(localStorage.getItem('group')) : null,
     slideTransitionInterval: localStorage.getItem('SlideTransitionInterval') ? Number(localStorage.getItem('SlideTransitionInterval')) : 5,
     files: [],
     aspectRatios: []
