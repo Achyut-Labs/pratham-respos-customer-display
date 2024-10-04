@@ -1,14 +1,14 @@
 export interface MediaSettings {
-  restaurantId: number
-  size: number
-  group: number
-  slideTransitionInterval: number
+  restaurantId: number;
+  size: number;
+  group: number;
+  slideTransitionInterval: number;
 }
 
 export interface GetFilesParams {
-  restaurant_id: number,
-  aspect_ratio_id: number,
-  group_ids: string
+  restaurant_id: number;
+  aspect_ratio_id: number;
+  group_ids: string;
 }
 export interface CustomerDisplayGroupType {
   id: number;
@@ -37,11 +37,11 @@ export interface MediaFile {
   customer_display_group_otm: CustomerDisplayGroupOtm[];
 }
 
-export type files = MediaFile[] | null
+export type files = MediaFile[] | null;
 
 export interface AspectRatio {
   id: number;
   aspect_ratio: string;
 }
 
-export type aspectRatiosList = AspectRatio[] | null
+export type aspectRatiosList = AspectRatio[];

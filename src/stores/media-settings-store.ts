@@ -1,58 +1,82 @@
-import { defineStore } from 'pinia'
-import { Loading } from 'quasar'
-import { api } from 'src/boot/axios'
-import { aspectRatiosList, files, GetFilesParams } from 'src/types/mediaSettings'
+import { defineStore } from 'pinia';
+import { Loading } from 'quasar';
+import { api } from 'src/boot/axios';
+import {
+  aspectRatiosList,
+  files,
+  GetFilesParams,
+} from 'src/types/mediaSettings';
 
+export interface ICustomerDisplaySettings {
+  restaurantId: number;
+  screenDivision: number;
+  groupToDisplay: number;
+  slideTransitionInterval: number;
+  lineItemFontSize: string;
+  modifiersFontSize: string;
+}
+
+export interface SocketConfig {
+  ip: string;
+  port: number;
+}
 interface State {
-  restaurantId: number | null
-  screenSize: number
-  group: number | null
-  files: files,
-  aspectRatios: aspectRatiosList
-  slideTransitionInterval: number
+  socketConfig: SocketConfig;
+  displaySettings: ICustomerDisplaySettings;
+  files: files;
+  aspectRatios: aspectRatiosList;
 }
 
 export const useMediaSettingsStore = defineStore('customer', {
   state: (): State => ({
-    restaurantId: localStorage.getItem('RestaurantId') ? Number(localStorage.getItem('RestaurantId')) : null,
-    screenSize: localStorage.getItem('ScreenSize') ? Number(localStorage.getItem('ScreenSize')) : 50,
-    group: localStorage.getItem('group') ? Number(localStorage.getItem('group')) : null,
-    slideTransitionInterval: localStorage.getItem('SlideTransitionInterval') ? Number(localStorage.getItem('SlideTransitionInterval')) : 5,
+    socketConfig: { ip: '', port: 3000 },
+    displaySettings: {
+      restaurantId: 0,
+      groupToDisplay: 1,
+      screenDivision: 50,
+      slideTransitionInterval: 50,
+      lineItemFontSize: '14px',
+      modifiersFontSize: '12px',
+    },
     files: [],
-    aspectRatios: []
-
+    aspectRatios: [],
   }),
   getters: {},
   actions: {
     async getCustomerDisplayFile(params: GetFilesParams) {
       try {
-        Loading.show()
-        const res: files | null = await api.get('customer-display/files/list/public', {params})
+        Loading.show();
+        const res: files | null = await api.get(
+          'customer-display/files/list/public',
+          { params }
+        );
         // notifications.successNotify('Customer is Registered Successfully!')
-        this.files = res
-        return res
+        this.files = res;
+        return res;
       } catch (error) {
-        console.error('API call error!')
+        console.error('API call error!');
         // Promise.reject();
       } finally {
-        Loading.hide()
+        Loading.hide();
       }
     },
 
     async getAspectRatios() {
       try {
-        Loading.show()
-        const res: aspectRatiosList | null = await api.get('aspect-ratios')
+        Loading.show();
+        const res: aspectRatiosList | null = await api.get('aspect-ratios');
         // notifications.successNotify('Customer is Registered Successfully!')
-        this.aspectRatios = res
-        return res
+        if (res) {
+          this.aspectRatios = res;
+        }
+        return res;
       } catch (error) {
-        console.error('API call error!')
+        console.error('API call error!');
         // Promise.reject();
       } finally {
-        Loading.hide()
+        Loading.hide();
       }
-    }
-  }
-  // persist: true
-})
+    },
+  },
+  persist: true,
+});
