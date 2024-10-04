@@ -34,7 +34,7 @@ export const useMediaSettingsStore = defineStore('mediaSettings', {
       restaurantId: 0,
       groupToDisplay: 1,
       screenDivision: 50,
-      slideTransitionInterval: 50,
+      slideTransitionInterval: 5,
       lineItemFontSize: '14px',
       modifiersFontSize: '12px',
     },
