@@ -27,7 +27,7 @@ interface State {
   aspectRatios: aspectRatiosList;
 }
 
-export const useMediaSettingsStore = defineStore('customer', {
+export const useMediaSettingsStore = defineStore('mediaSettings', {
   state: (): State => ({
     socketConfig: { ip: '', port: 3000 },
     displaySettings: {
