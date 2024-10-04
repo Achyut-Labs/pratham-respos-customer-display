@@ -16,14 +16,18 @@
           :src="file.file_path"
           class="media-content"
         />
-        <q-video
+        <video v-else controls muted autoplay class="media-content video-fit">
+          <source :src="file.file_path" :type="getVideoType(file.file_path)">
+          Your browser does not support the video tag.
+        </video>
+        <!-- <q-video
           v-else
           ref="video"
           class="media-content video-fit"
           :src="file.file_path"
           autoplay
           loop
-        />
+        /> -->
       </q-carousel-slide>
     </q-carousel>
   </div>
@@ -65,6 +69,25 @@ const updateMediaSettings = async (data: MediaSettings) => {
   localStorage.setItem('SlideTransitionInterval', String(data.slideTransitionInterval))
   const aspectRatioId = calculateAspectRatio(data.size)
   await mediaSettingsStore.getCustomerDisplayFile({restaurant_id: data.restaurantId, aspect_ratio_id: aspectRatioId, group_ids: String(data.group)})
+}
+
+const getVideoType = (src: string) : string => {
+  const extension = src.split('.').pop()?.toLowerCase() || 'unknown'
+
+  switch (extension) {
+    case 'mp4':
+      return 'video/mp4';
+    case 'webm':
+      return 'video/webm';
+    case 'ogg':
+      return 'video/ogg';
+    case 'avi':
+      return 'video/x-msvideo';
+    case 'mov':
+      return 'video/quicktime';
+    default:
+      return 'unknown';
+  }
 }
 const startAutoplay = () => {
   slideInterval.value = setInterval(() => {
