@@ -41,32 +41,6 @@ const slide = ref<number>(1);
 
 const slideInterval = ref<ReturnType<typeof setInterval> | null>(null); // Correct type for setInterval
 
-// const calculateAspectRatio = (screenSize: number) : number => {
-//   let ar
-//   if (screenSize === 50) {
-//     ar = '8:9'
-//   } else if (screenSize === 70) {
-//     ar = '5:4'
-//   } else {
-//     ar = '16:9'
-//   }
-//   const availableAspectRatio = mediaSettingsStore.aspectRatios?.filter((item) => item.aspect_ratio === ar)
-//   return availableAspectRatio ? availableAspectRatio[0].id : 0
-// }
-// const updateMediaSettings = async (data: MediaSettings) => {
-//   await mediaSettingsStore.getAspectRatios()
-//   mediaSettingsStore.screenSize = data.size
-//   mediaSettingsStore.group = data.group
-//   mediaSettingsStore.restaurantId = data.restaurantId
-//   mediaSettingsStore.slideTransitionInterval = data.slideTransitionInterval
-//   localStorage.setItem('ScreenSize', String(data.size))
-//   localStorage.setItem('Group', String(data.group))
-//   localStorage.setItem('RestaurantId', String(data.restaurantId))
-//   localStorage.setItem('SlideTransitionInterval', String(data.slideTransitionInterval))
-//   const aspectRatioId = calculateAspectRatio(data.size)
-//   await mediaSettingsStore.getCustomerDisplayFile({restaurant_id: data.restaurantId, aspect_ratio_id: aspectRatioId, group_ids: String(data.group)})
-// }
-
 const getVideoType = (src: string) : string => {
   const extension = src.split('.').pop()?.toLowerCase() || 'unknown'
 
