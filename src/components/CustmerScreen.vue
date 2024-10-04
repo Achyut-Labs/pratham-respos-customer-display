@@ -77,7 +77,7 @@
       </template>
     </q-table>
 
-    <div class="q-pa-sm">
+    <div class="q-pa-sm q-pb-none">
       <CardTotal
         :subTotal="subTotal"
         :surchargeAmount="surchargeAmount"
@@ -193,7 +193,7 @@ onMounted(() => {
 .table-layout {
   margin: 8px;
   width: 98%;
-  height: calc(100vh - 230px);
+  height: calc(100vh - 250px);
   background-color: rgba(38, 36, 39, 0.034);
 }
 .q-table tbody td {
