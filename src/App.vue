@@ -3,13 +3,20 @@
 </template>
 
 <script lang="ts" setup>
-import { connectSocket } from './boot/local-socket';
+import { connectSocket, onMediaSettingsUpdate } from './boot/local-socket';
 import { useRouter } from 'vue-router';
-import { useMediaSettingsStore } from './stores/media-settings-store';
-import { onMounted } from 'vue';
+import {
+  ICustomerDisplaySettings,
+  useMediaSettingsStore,
+} from './stores/media-settings-store';
+import { onMounted, watchEffect } from 'vue';
+import { storeToRefs } from 'pinia';
 
 const router = useRouter();
-const mediaSettingsStore = useMediaSettingsStore();
+
+const settingStore = useMediaSettingsStore();
+
+const { socketConfig, displaySettings } = storeToRefs(settingStore);
 
 const calculateAspectRatio = (screenSize: number): number => {
   let ar;
@@ -20,40 +27,31 @@ const calculateAspectRatio = (screenSize: number): number => {
   } else {
     ar = '16:9';
   }
-  const availableAspectRatio = mediaSettingsStore.aspectRatios?.filter(
+  const availableAspectRatio = settingStore.aspectRatios.filter(
     (item) => item.aspect_ratio === ar
   );
-
-  return availableAspectRatio && availableAspectRatio?.length > 0
-    ? availableAspectRatio[0].id
-    : 0;
+  return availableAspectRatio ? availableAspectRatio[0].id : 0;
 };
 
-const getFiles = async () => {
-  mediaSettingsStore.screenSize = Number(localStorage.getItem('ScreenSize'));
-  mediaSettingsStore.group = Number(localStorage.getItem('group'));
-  mediaSettingsStore.restaurantId = Number(
-    localStorage.getItem('RestaurantId')
-  );
-  mediaSettingsStore.slideTransitionInterval = Number(
-    localStorage.getItem('SlideTransitionInterval')
-  );
-  const aspectRatioId = calculateAspectRatio(mediaSettingsStore.screenSize);
-  await mediaSettingsStore.getCustomerDisplayFile({
-    restaurant_id: mediaSettingsStore.restaurantId,
+const updateMediaSettings = async (data: ICustomerDisplaySettings) => {
+  await settingStore.getAspectRatios();
+  displaySettings.value = { ...data };
+
+  const aspectRatioId = calculateAspectRatio(data.screenDivision);
+  await settingStore.getCustomerDisplayFile({
+    restaurant_id: data.restaurantId,
     aspect_ratio_id: aspectRatioId,
-    group_ids: String(mediaSettingsStore.group),
+    group_ids: String(data.groupToDisplay),
   });
 };
 
-onMounted(async () => {
-  const localSocketServerIp = localStorage.getItem('localSocketServerIp');
-  const localSocketServerPort = Number(
-    localStorage.getItem('localSocketServerPort')
-  );
-  if (localSocketServerIp && localSocketServerPort) {
-    connectSocket(localSocketServerIp, localSocketServerPort, router);
+onMounted(() => {
+  onMediaSettingsUpdate(updateMediaSettings);
+});
+
+watchEffect(() => {
+  if (socketConfig.value.ip && socketConfig.value.port) {
+    connectSocket(socketConfig.value.ip, socketConfig.value.port, router);
   }
-  getFiles();
 });
 </script>

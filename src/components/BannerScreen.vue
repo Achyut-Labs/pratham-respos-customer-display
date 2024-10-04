@@ -1,14 +1,9 @@
 <template>
   <div class="image-container pa-none">
-    <q-carousel
-      animated
-      v-model="slide"
-      infinite
-      height="100%"
-    >
+    <q-carousel animated v-model="slide" infinite height="100%">
       <q-carousel-slide
         v-for="(file, ind) in mediaSettingsStore.files"
-        :name="ind+1"
+        :name="ind + 1"
         :key="ind"
       >
         <q-img
@@ -33,43 +28,44 @@
   </div>
 </template>
 
-
 <script setup lang="ts">
 import { onMounted, ref, onUnmounted } from 'vue';
-import { onMediaSettingsUpdate } from '../boot/local-socket';
-import { MediaSettings } from '../types/mediaSettings';
-import { useMediaSettingsStore } from '../stores/media-settings-store'
+import { useMediaSettingsStore } from '../stores/media-settings-store';
+import { storeToRefs } from 'pinia';
 
-const mediaSettingsStore = useMediaSettingsStore()
-const slide = ref<number>(1)
+const mediaSettingsStore = useMediaSettingsStore();
 
-const slideInterval = ref<ReturnType<typeof setInterval> | null>(null);  // Correct type for setInterval
+const { displaySettings } = storeToRefs(mediaSettingsStore);
 
-const calculateAspectRatio = (screenSize: number) : number => {
-  let ar
-  if (screenSize === 50) {
-    ar = '8:9'
-  } else if (screenSize === 70) {
-    ar = '5:4'
-  } else {
-    ar = '16:9'
-  }
-  const availableAspectRatio = mediaSettingsStore.aspectRatios?.filter((item) => item.aspect_ratio === ar)
-  return availableAspectRatio ? availableAspectRatio[0].id : 0
-}
-const updateMediaSettings = async (data: MediaSettings) => {
-  await mediaSettingsStore.getAspectRatios()
-  mediaSettingsStore.screenSize = data.size
-  mediaSettingsStore.group = data.group
-  mediaSettingsStore.restaurantId = data.restaurantId
-  mediaSettingsStore.slideTransitionInterval = data.slideTransitionInterval
-  localStorage.setItem('ScreenSize', String(data.size))
-  localStorage.setItem('Group', String(data.group))
-  localStorage.setItem('RestaurantId', String(data.restaurantId))
-  localStorage.setItem('SlideTransitionInterval', String(data.slideTransitionInterval))
-  const aspectRatioId = calculateAspectRatio(data.size)
-  await mediaSettingsStore.getCustomerDisplayFile({restaurant_id: data.restaurantId, aspect_ratio_id: aspectRatioId, group_ids: String(data.group)})
-}
+const slide = ref<number>(1);
+
+const slideInterval = ref<ReturnType<typeof setInterval> | null>(null); // Correct type for setInterval
+
+// const calculateAspectRatio = (screenSize: number) : number => {
+//   let ar
+//   if (screenSize === 50) {
+//     ar = '8:9'
+//   } else if (screenSize === 70) {
+//     ar = '5:4'
+//   } else {
+//     ar = '16:9'
+//   }
+//   const availableAspectRatio = mediaSettingsStore.aspectRatios?.filter((item) => item.aspect_ratio === ar)
+//   return availableAspectRatio ? availableAspectRatio[0].id : 0
+// }
+// const updateMediaSettings = async (data: MediaSettings) => {
+//   await mediaSettingsStore.getAspectRatios()
+//   mediaSettingsStore.screenSize = data.size
+//   mediaSettingsStore.group = data.group
+//   mediaSettingsStore.restaurantId = data.restaurantId
+//   mediaSettingsStore.slideTransitionInterval = data.slideTransitionInterval
+//   localStorage.setItem('ScreenSize', String(data.size))
+//   localStorage.setItem('Group', String(data.group))
+//   localStorage.setItem('RestaurantId', String(data.restaurantId))
+//   localStorage.setItem('SlideTransitionInterval', String(data.slideTransitionInterval))
+//   const aspectRatioId = calculateAspectRatio(data.size)
+//   await mediaSettingsStore.getCustomerDisplayFile({restaurant_id: data.restaurantId, aspect_ratio_id: aspectRatioId, group_ids: String(data.group)})
+// }
 
 const getVideoType = (src: string) : string => {
   const extension = src.split('.').pop()?.toLowerCase() || 'unknown'
@@ -91,9 +87,9 @@ const getVideoType = (src: string) : string => {
 }
 const startAutoplay = () => {
   slideInterval.value = setInterval(() => {
-    if(mediaSettingsStore.files && mediaSettingsStore.files.length > 0)
-    slide.value = (slide.value % mediaSettingsStore.files.length) + 1;  // Cycle through slides
-  }, mediaSettingsStore.slideTransitionInterval * 1000);
+    if (mediaSettingsStore.files && mediaSettingsStore.files.length > 0)
+      slide.value = (slide.value % mediaSettingsStore.files.length) + 1; // Cycle through slides
+  }, displaySettings.value.slideTransitionInterval * 1000);
 };
 
 // Clear interval when component is destroyed
@@ -103,12 +99,11 @@ const stopAutoplay = () => {
   }
 };
 onMounted(() => {
-  onMediaSettingsUpdate(updateMediaSettings)
   startAutoplay();
-})
+});
 onUnmounted(() => {
-  stopAutoplay()
-})
+  stopAutoplay();
+});
 </script>
 
 <style scoped>
@@ -149,6 +144,4 @@ onUnmounted(() => {
   height: 100%;
   object-fit: cover; /* Use 'cover' to fill the container */
 }
-
 </style>
-
