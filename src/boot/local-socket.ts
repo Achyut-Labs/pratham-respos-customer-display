@@ -2,7 +2,11 @@ import { io, Socket } from 'socket.io-client';
 import { boot } from 'quasar/wrappers';
 import { OrderCart } from 'src/types/cart';
 import { Router } from 'vue-router';
-import { ICustomerDisplaySettings } from 'src/stores/media-settings-store';
+import {
+  ICustomerDisplaySettings,
+  useMediaSettingsStore,
+} from 'src/stores/media-settings-store';
+import { Loading } from 'quasar';
 
 let socket: Socket | null = null;
 
@@ -12,8 +16,16 @@ export const connectSocket = (ip: string, port: number, router: Router) => {
   socket = io(socketUrl);
 
   socket.on('connect', () => {
+    Loading.show();
     console.log('Connected to the local socket');
-    router.push('/'); // Navigate to the main page on successful connection
+    setTimeout(() => {
+      router.push('/');
+      Loading.hide();
+    }, 1000);
+  });
+
+  socket.on('connection', (data) => {
+    console.log('Connected to the local socket', data);
   });
 
   socket.on('connect_error', (error) => {
@@ -38,8 +50,12 @@ export const connectSocket = (ip: string, port: number, router: Router) => {
   });
 
   // Listen for the 'connection' event
-  socket.on('connection', (data) => {
+  socket.on('setup', (data) => {
+    const settingsStore = useMediaSettingsStore();
+    settingsStore.displaySettings.restaurantId = data.restaurantId;
     console.log('Connection event:', data);
+
+    // location.reload();
   });
 
   // Disconnect the client upon page unload

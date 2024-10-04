@@ -35,10 +35,7 @@ const calculateAspectRatio = (screenSize: number): number => {
 
 const updateMediaSettings = async (data: ICustomerDisplaySettings) => {
   await settingStore.getAspectRatios();
-  displaySettings.value.screenDivision = data.screenDivision;
-  displaySettings.value.groupToDisplay = data.groupToDisplay;
-  displaySettings.value.restaurantId = data.restaurantId;
-  displaySettings.value.slideTransitionInterval = data.slideTransitionInterval;
+  displaySettings.value = { ...data };
 
   const aspectRatioId = calculateAspectRatio(data.screenDivision);
   await settingStore.getCustomerDisplayFile({
