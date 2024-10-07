@@ -197,7 +197,4 @@ onMounted(() => {
   height: calc(100vh - 250px);
   background-color: rgba(38, 36, 39, 0.034);
 }
-.q-table tbody td {
-  font-size: 16px;
-}
 </style>

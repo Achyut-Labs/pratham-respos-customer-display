@@ -37,7 +37,4 @@ defineProps({
 </script>
 
 <style scoped>
-.font-17{
-  font-size: 17px
-}
 </style>
