@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import CustomerDisplay from 'src/components/CustmerScreen.vue';
+import CustomerDisplay from 'src/components/CartData.vue';
 import Banner from 'src/components/BannerScreen.vue';
 import { useMediaSettingsStore } from '../stores/media-settings-store';
 import { onMounted } from 'vue';

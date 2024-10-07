@@ -5,13 +5,13 @@
     >
       <div class="col q-pa-sm text-white">
         {{
-          cartItems?.customer?.name || cartItems?.guestCustomerName || 'Guest'
+          cartStore.cartItems?.customer?.name || cartStore.cartItems?.guestCustomerName || 'Guest'
         }}
       </div>
       <div class="col q-pa-sm text-white text-right">
         {{
-          cartItems && cartItems.daily_order_number
-            ? cartItems.daily_order_number
+          cartStore.cartItems && cartStore.cartItems.daily_order_number
+            ? cartStore.cartItems.daily_order_number
             : ''
         }}
       </div>
@@ -96,23 +96,24 @@ import CardTotal from 'src/components/Table/CardTotal.vue';
 import { QTableColumn } from 'quasar';
 import { useMediaSettingsStore } from 'src/stores/media-settings-store';
 import { storeToRefs } from 'pinia';
+import { useCartStore } from '../stores/cart';
 
 const settingStore = useMediaSettingsStore();
+const cartStore = useCartStore()
 
 const { displaySettings } = storeToRefs(settingStore);
 
-const cartItems = ref<OrderCart | null>(null);
+// const cartItems = ref<OrderCart | null>(null);
 // const customer = ref<Customer>({ id: 0, name: 'Guest', email: '', phone_no: '' });
 
 const subTotal = computed(
-  () => cartItems.value?.subTotal?.toFixed(2) ?? '0.00'
+  () => cartStore.cartItems?.subTotal?.toFixed(2) ?? '0.00'
 );
 const totalAmount = computed(
-  () => cartItems.value?.totalAmount?.toFixed(2) ?? '0.00'
+  () => cartStore.cartItems?.totalAmount?.toFixed(2) ?? '0.00'
 );
 
-// @ts-expect-error - dd
-const formatMoney = (value) => '$' + Number(value).toFixed(2);
+const formatMoney = (value: number | string) => '$' + Number(value).toFixed(2);
 
 const formatAmount = (amount: number, type: number, isSurcharge: boolean) => {
   if (amount === 0) return undefined;
@@ -121,21 +122,21 @@ const formatAmount = (amount: number, type: number, isSurcharge: boolean) => {
 };
 const surchargeAmount = computed(() =>
   formatAmount(
-    cartItems.value?.surcharge_amount ?? 0,
-    cartItems.value?.surcharge_type ?? 0,
+    cartStore.cartItems?.surcharge_amount ?? 0,
+    cartStore.cartItems?.surcharge_type ?? 0,
     true
   )
 );
 const discountAmount = computed(() =>
   formatAmount(
-    cartItems.value?.discount ?? 0,
-    cartItems.value?.discount_type ?? 0,
+    cartStore.cartItems?.discount ?? 0,
+    cartStore.cartItems?.discount_type ?? 0,
     false
   )
 );
 
 const updateCart = (data: OrderCart) => {
-  cartItems.value = {
+  cartStore.cartItems = {
     ...data,
     surcharge_amount: data.surcharge_amount ?? 0,
     surcharge_type: data.surcharge_type ?? 0,
@@ -146,7 +147,7 @@ const updateCart = (data: OrderCart) => {
 
 const tableRows = computed(
   () =>
-    cartItems.value?.orderList?.map((item) => ({
+  cartStore.cartItems?.orderList?.map((item) => ({
       ...item,
       nameWithModifiers: `<strong>${item.name} ($${(item.price ?? 0).toFixed(
         2
