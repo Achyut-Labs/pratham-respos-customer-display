@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, onUnmounted } from 'vue';
+import { onMounted, ref, onUnmounted, watch } from 'vue';
 import { useMediaSettingsStore } from '../stores/media-settings-store';
 import { storeToRefs } from 'pinia';
 
@@ -78,6 +78,16 @@ onMounted(() => {
 onUnmounted(() => {
   stopAutoplay();
 });
+
+watch(
+  () => displaySettings.value.slideTransitionInterval,
+  (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+      stopAutoplay(); // Clear the previous interval
+      startAutoplay(); // Start a new interval with the updated value
+    }
+  }
+);
 </script>
 
 <style scoped>
