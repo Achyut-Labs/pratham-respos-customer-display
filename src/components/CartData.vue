@@ -78,12 +78,7 @@
     </q-table>
 
     <div class="q-pa-sm q-pb-none">
-      <CardTotal
-        :subTotal="subTotal"
-        :surchargeAmount="surchargeAmount"
-        :discountAmount="discountAmount"
-        :totalAmount="totalAmount"
-      />
+      <CardTotal />
     </div>
   </div>
 </template>
@@ -106,34 +101,7 @@ const { displaySettings } = storeToRefs(settingStore);
 // const cartItems = ref<OrderCart | null>(null);
 // const customer = ref<Customer>({ id: 0, name: 'Guest', email: '', phone_no: '' });
 
-const subTotal = computed(
-  () => cartStore.cartItems?.subTotal?.toFixed(2) ?? '0.00'
-);
-const totalAmount = computed(
-  () => cartStore.cartItems?.totalAmount?.toFixed(2) ?? '0.00'
-);
-
 const formatMoney = (value: number | string) => '$' + Number(value).toFixed(2);
-
-const formatAmount = (amount: number, type: number, isSurcharge: boolean) => {
-  if (amount === 0) return undefined;
-  const sign = isSurcharge ? '+' : '-';
-  return type === 1 ? `${sign} $${amount.toFixed(2)}` : `${sign} ${amount}%`;
-};
-const surchargeAmount = computed(() =>
-  formatAmount(
-    cartStore.cartItems?.surcharge_amount ?? 0,
-    cartStore.cartItems?.surcharge_type ?? 0,
-    true
-  )
-);
-const discountAmount = computed(() =>
-  formatAmount(
-    cartStore.cartItems?.discount ?? 0,
-    cartStore.cartItems?.discount_type ?? 0,
-    false
-  )
-);
 
 const updateCart = (data: OrderCart) => {
   cartStore.cartItems = {
