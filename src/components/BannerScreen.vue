@@ -1,6 +1,6 @@
 <template>
   <div class="image-container pa-none">
-    <q-carousel animated v-model="slide" infinite height="100%">
+    <q-carousel animated v-model="slide" infinite height="100%" transition-next="slide-left" transition-prev="slide-right" transition-duration="2000">
       <q-carousel-slide
         v-for="(file, ind) in mediaSettingsStore.files"
         :name="ind + 1"
