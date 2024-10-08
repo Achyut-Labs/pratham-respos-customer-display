@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { boot } from 'quasar/wrappers';
-import { OrderCart } from 'src/types/cart';
+import { EmitOrderCartData } from 'src/types/cart';
 import { Router } from 'vue-router';
 import {
   ICustomerDisplaySettings,
@@ -38,7 +38,7 @@ export const connectSocket = (ip: string, port: number, router: Router) => {
   });
 
   // Listen for the 'update-cart' event
-  socket.on('update-cart', (data: OrderCart) => {
+  socket.on('update-cart', (data: EmitOrderCartData) => {
     console.log('Received cart update:', data);
     onCartUpdateCallback?.(data);
   });
@@ -65,14 +65,14 @@ export const connectSocket = (ip: string, port: number, router: Router) => {
 };
 
 // Callback function to handle 'update-cart'
-let onCartUpdateCallback: ((data: OrderCart) => void) | null = null;
+let onCartUpdateCallback: ((data: EmitOrderCartData) => void) | null = null;
 
 // Callback function to handle 'customer-display-settings'
 let onMediaSettingsUpdateCallback:
   | ((data: ICustomerDisplaySettings) => void)
   | null = null;
 
-export const onCartUpdate = (fn: (data: OrderCart) => void) => {
+export const onCartUpdate = (fn: (data: EmitOrderCartData) => void) => {
   if (typeof fn !== 'function') {
     throw new Error('`fn` is not a function');
   }

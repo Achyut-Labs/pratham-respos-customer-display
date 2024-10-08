@@ -187,3 +187,7 @@ export interface OrderCart {
   // local properties
   isDaySurchargeApplied?: boolean
 }
+
+export interface EmitOrderCartData extends OrderCart {
+  paid?: boolean
+}

@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
-import { OrderCart } from 'src/types/cart';
+import { EmitOrderCartData } from 'src/types/cart';
 
 interface State {
-  cartItems: OrderCart | null
+  cartItems: EmitOrderCartData | null
 }
 
 export const useCartStore = defineStore('cart', {

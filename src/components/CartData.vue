@@ -86,7 +86,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { onCartUpdate } from '../boot/local-socket';
-import { OrderCart } from '../types/cart';
+import { EmitOrderCartData } from '../types/cart';
 import CardTotal from 'src/components/Table/CardTotal.vue';
 import { QTableColumn } from 'quasar';
 import { useMediaSettingsStore } from 'src/stores/media-settings-store';
@@ -103,7 +103,7 @@ const { displaySettings } = storeToRefs(settingStore);
 
 const formatMoney = (value: number | string) => '$' + Number(value).toFixed(2);
 
-const updateCart = (data: OrderCart) => {
+const updateCart = (data: EmitOrderCartData) => {
   cartStore.cartItems = {
     ...data,
     surcharge_amount: data.surcharge_amount ?? 0,
