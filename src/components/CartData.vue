@@ -6,7 +6,7 @@
       <div class="col q-pa-sm text-white">
         {{
           cartStore.cartItems?.customer?.name || cartStore.cartItems?.guestCustomerName || 'Guest'
-        }}
+        }} <span class="text-overline">( {{ cartStore.cartItems?.order_type?.type }} )</span>
       </div>
       <div class="col q-pa-sm text-white text-right">
         {{
