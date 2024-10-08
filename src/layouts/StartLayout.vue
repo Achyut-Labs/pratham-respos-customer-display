@@ -16,7 +16,7 @@
               <span class="text-purple font-italic">Dignify</span>
               <span> Brand, Start to</span> <span class="text-green"> Rectify </span> Now
             </div>
-            <img alt="" class="q-" src="../assets/pratham_pos.png" style="width: 400px" />
+            <img alt="" class="q-" src="../assets/pratham_pos.png" style="width: 600px" />
           </div>
 
           <div class="flex py-6 justify-center bg-white h-full w-full md:w-1/2">
