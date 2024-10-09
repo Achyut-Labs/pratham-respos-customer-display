@@ -1,12 +1,12 @@
 <template>
   <div class=" ">
     <div
-      class="flex text-h5 bg-primary text-bold q-px-sm q-pb-sm q-pt-none mx-1 rounded-borders"
+      class="flex text-h5 bg-primary text-bold q-px-sm q-pt-none mx-1 rounded-borders"
     >
       <div class="col q-pa-sm text-white">
         {{
           cartStore.cartItems?.customer?.name || cartStore.cartItems?.guestCustomerName || 'Guest'
-        }} <span class="text-overline" v-if="cartStore.cartItems?.order_type">( {{ cartStore.cartItems?.order_type?.type }} )</span>
+        }} <div class="text-overline" v-if="cartStore.cartItems?.order_type">( {{ cartStore.cartItems?.order_type?.type }} )</div>
       </div>
       <div class="col q-pa-sm text-white text-right">
         {{
@@ -162,7 +162,7 @@ onMounted(() => {
 .table-layout {
   margin: 8px;
   width: 98%;
-  height: calc(100vh - 250px);
+  height: calc(100vh - 260px);
   background-color: rgba(38, 36, 39, 0.034);
 }
 </style>
