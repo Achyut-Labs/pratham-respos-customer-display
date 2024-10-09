@@ -1,19 +1,20 @@
 <template>
   <div class=" ">
     <div
-      class="flex text-h5 bg-primary text-bold q-px-sm q-pt-none mx-1 rounded-borders"
+      class="flex text-h6 bg-primary text-bold q-px-sm q-pt-none mx-1 rounded-borders"
     >
       <div class="col q-pa-sm text-white">
         {{
           cartStore.cartItems?.customer?.name || cartStore.cartItems?.guestCustomerName || 'Guest'
-        }} <div class="text-overline" v-if="cartStore.cartItems?.order_type">( {{ cartStore.cartItems?.order_type?.type }} )</div>
-      </div>
-      <div class="col q-pa-sm text-white text-right">
-        {{
-          cartStore.cartItems && cartStore.cartItems.daily_order_number
-            ? cartStore.cartItems.daily_order_number
-            : ''
         }}
+        <div class="" v-if="cartStore.cartItems?.daily_order_number">{{
+          cartStore.cartItems && cartStore.cartItems.daily_order_number
+            ? 'Daily Order# ' + cartStore.cartItems.daily_order_number
+            : ''
+        }}</div>
+      </div>
+      <div class="col q-pa-sm text-white text-right text-overline">
+        ( {{ cartStore.cartItems?.order_type?.type }} )
       </div>
     </div>
     <q-table
