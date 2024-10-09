@@ -16,6 +16,8 @@ function createWindow() {
     width: 1000,
     height: 600,
     useContentSize: true,
+    frame: false, // Hide the title bar and task bar
+    fullscreen: true, // Open in fullscreen mode
     webPreferences: {
       contextIsolation: true,
       // More info: https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/electron-preload-script
@@ -25,15 +27,15 @@ function createWindow() {
 
   mainWindow.loadURL(process.env.APP_URL);
 
-  if (process.env.DEBUGGING) {
-    // if on DEV or Production with debug enabled
-    mainWindow.webContents.openDevTools();
-  } else {
-    // we're on production; no access to devtools pls
-    mainWindow.webContents.on('devtools-opened', () => {
-      mainWindow?.webContents.closeDevTools();
-    });
-  }
+  // if (process.env.DEBUGGING) {
+  //   // if on DEV or Production with debug enabled
+  //   mainWindow.webContents.openDevTools();
+  // } else {
+  //   // we're on production; no access to devtools pls
+  //   mainWindow.webContents.on('devtools-opened', () => {
+  //     mainWindow?.webContents.closeDevTools();
+  //   });
+  // }
 
   mainWindow.on('closed', () => {
     mainWindow = undefined;
