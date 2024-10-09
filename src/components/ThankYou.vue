@@ -4,7 +4,7 @@
       <q-card-section>
         <div class="animated-text">
           <q-icon name="celebration" class="q-mr-md" />
-          <span class=" text-bold">Thank You! Enjoy Your Meal!</span>
+          <span class=" text-bold">Thank You For Your Order!</span>
         </div>
       </q-card-section>
     </q-card>
