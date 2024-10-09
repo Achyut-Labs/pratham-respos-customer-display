@@ -16,7 +16,7 @@ function createWindow() {
     width: 1000,
     height: 600,
     useContentSize: true,
-    frame: false, // Hide the title bar and task bar
+    // frame: false, // Hide the title bar and task bar
     fullscreen: true, // Open in fullscreen mode
     webPreferences: {
       contextIsolation: true,
