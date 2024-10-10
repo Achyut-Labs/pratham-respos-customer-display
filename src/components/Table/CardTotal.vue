@@ -7,16 +7,16 @@
       </div>
 
       <div class="row q-col-gutter-md ">
-        <div class="col font-17 text-bold text-white">Surcharge: <span v-if="cartStore.cartItems?.surcharge_type===2"> (+{{cartStore.cartItems?.surcharge_amount}}%) </span> </div>
+        <div class="col font-17 text-bold text-white">Discount: <span v-if="cartStore.cartItems?.discount_type===2"> ({{cartStore.cartItems?.discount}}%) </span> </div>
         <div class="col font-17 text-right text-bold text-white">
-           {{ surchargeAmount ? surchargeAmount : 0 }}
+           {{ discountAmount ? discountAmount : 0 }}
         </div>
       </div>
 
       <div class="row q-col-gutter-md ">
-        <div class="col font-17 text-bold text-white">Discount: <span v-if="cartStore.cartItems?.discount_type===2"> (-{{cartStore.cartItems?.discount}}%) </span> </div>
+        <div class="col font-17 text-bold text-white">Surcharge: <span v-if="cartStore.cartItems?.surcharge_type===2"> ({{cartStore.cartItems?.surcharge_amount}}%) </span> </div>
         <div class="col font-17 text-right text-bold text-white">
-           {{ discountAmount ? discountAmount : 0 }}
+           {{ surchargeAmount ? surchargeAmount : 0 }}
         </div>
       </div><hr/>
       <div class="row q-col-gutter-md ">
@@ -39,34 +39,52 @@ const totalAmount = computed(
   () => cartStore.cartItems?.totalAmount?.toFixed(2) ?? '0.00'
 );
 
-const formatAmount = (amount: number, type: number, isSurcharge: boolean) => {
-  if (amount === 0) return undefined;
-  const sign = isSurcharge ? '+' : '-';
-  if(type===2) {
-    let amt = cartStore.cartItems?.subTotal ? cartStore.cartItems?.subTotal * (amount / 100) : 0
-    return `${sign} $${amt.toFixed(2)}`
-  } else {
-    return `${sign} $${amount.toFixed(2)}`
-  }
+// const formatAmount = (amount: number, type: number, isSurcharge: boolean) => {
+//   if (amount === 0) return undefined;
+//   const sign = isSurcharge ? '+' : '-';
+//   if(type===2) {
+//     let amt = cartStore.cartItems?.subTotal ? cartStore.cartItems?.subTotal * (amount / 100) : 0
+//     return `${sign} $${amt.toFixed(2)}`
+//   } else {
+//     return `${sign} $${amount.toFixed(2)}`
+//   }
 
-};
-const surchargeAmount = computed(() =>
-  formatAmount(
-    cartStore.cartItems?.surcharge_amount ?? 0,
-    cartStore.cartItems?.surcharge_type ?? 0,
-    true
-  )
-);
-const discountAmount = computed(() =>
-  formatAmount(
-    cartStore.cartItems?.discount ?? 0,
-    cartStore.cartItems?.discount_type ?? 0,
-    false
-  )
-);
+// };
+const surchargeAmount = computed(() => {
+  const val = calculateSurcharge()
+  return `+${val?.toFixed(2)}`
+  }
+)
+const discountAmount = computed(() => {
+  const val = calculateDiscount()
+  return `-${val?.toFixed(2)}`
+  }
+)
+
+const calculateDiscount = () => {
+  let val = 0
+  if(cartStore.cartItems?.discount && cartStore.cartItems?.subTotal) {
+
+    val = cartStore.cartItems?.discount_type === 2 ? cartStore.cartItems?.subTotal * (cartStore.cartItems?.discount / 100) : cartStore.cartItems?.discount
+  }
+  return val
+}
+
+const calculateSurcharge = () => {
+  let val = 0
+  let discount = calculateDiscount()
+  if(cartStore.cartItems?.subTotal && cartStore.cartItems?.surcharge_amount) {
+    if(discount) {
+      val = cartStore.cartItems?.surcharge_type === 2 ? (cartStore.cartItems?.subTotal - discount) * (cartStore.cartItems?.surcharge_amount / 100) : cartStore.cartItems?.surcharge_amount
+    } else {
+      val = cartStore.cartItems?.surcharge_type === 2 ? cartStore.cartItems?.subTotal * (cartStore.cartItems?.surcharge_amount / 100) : cartStore.cartItems?.surcharge_amount
+    }
+  }
+  return val
+}
 
 
 </script>
 
 <style scoped>
-</style>
+</style>evalevalQCardQCardQCardSectionQCardSection
