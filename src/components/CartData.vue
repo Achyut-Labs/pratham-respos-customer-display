@@ -13,7 +13,7 @@
             : ''
         }}</div>
       </div>
-      <div class="col q-pa-sm text-white text-right text-overline">
+      <div v-if="cartStore.cartItems?.order_type?.type" class="col q-pa-sm text-white text-right text-overline">
         ( {{ cartStore.cartItems?.order_type?.type }} )
       </div>
     </div>
