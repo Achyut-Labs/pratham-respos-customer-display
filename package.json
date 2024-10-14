@@ -12,7 +12,9 @@
     "dev": "quasar dev",
     "build": "quasar build",
     "dev:electron": "quasar dev -m electron",
-    "build:electron": "quasar build --mode electron"
+    "build:electron": "quasar build --mode electron",
+    "dev:cordova": "quasar dev -m cordova -T android",
+    "build:cordova": "quasar build -m cordova -T android"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.4",
