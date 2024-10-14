@@ -52,12 +52,12 @@ const totalAmount = computed(
 // };
 const surchargeAmount = computed(() => {
   const val = calculateSurcharge()
-  return `+${val?.toFixed(2)}`
+  return `+$${val?.toFixed(2)}`
   }
 )
 const discountAmount = computed(() => {
   const val = calculateDiscount()
-  return `-${val?.toFixed(2)}`
+  return `-$${val?.toFixed(2)}`
   }
 )
 
