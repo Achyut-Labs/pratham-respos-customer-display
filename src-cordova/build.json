@@ -1,0 +1,18 @@
+{
+  "android": {
+    "debug": {
+      "keystore": "./release-key.keystore",
+      "storePassword": "pratham2024",
+      "alias": "customer-display-key",
+      "password": "pratham2024",
+      "keystoreType": "jks"
+    },
+    "release": {
+      "keystore": "./release-key.keystore",
+      "storePassword": "pratham2024",
+      "alias": "customer-display-key",
+      "password": "pratham2024",
+      "keystoreType": "jks"
+    }
+  }
+}
