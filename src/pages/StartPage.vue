@@ -55,7 +55,7 @@
       <div class="text-center">
         <div class="flex items-center justify-center text-center">
           <q-input
-            v-model="config.ip"
+            v-model="settingStore.socketConfig.ip"
             label="Enter IPv4 Address"
             hint="Format: xxx.xxx.xxx.xxx"
             style="max-width: 350px"
@@ -64,10 +64,10 @@
             outlined
           />
           <q-input
-            v-model.number="config.port"
+            v-model.number="settingStore.socketConfig.port"
             label="Enter Port Number"
             style="max-width: 350px"
-            :rules="[(val) => isValidPort(val) || 'Invalid port number']"
+            :rules="[(val:number) => isValidPort(val) || 'Invalid port number']"
             class="ml-1"
             outlined
           />
@@ -84,19 +84,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { connectSocket } from '../boot/local-socket';
-import { useRouter } from 'vue-router';
 import { useMediaSettingsStore } from 'src/stores/media-settings-store';
-
-const router = useRouter();
+import { useSocket } from './useSocket';
 
 const settingStore = useMediaSettingsStore();
-// IPv4 validation regular expression
-const config = ref({
-  ip: settingStore.socketConfig.ip || '127.0.0.1',
-  port: settingStore.socketConfig.port || 3000,
-});
+
+const { connectSocket } = useSocket();
 
 const ipv4Regex =
   /^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}$/;
@@ -111,8 +104,6 @@ const isValidPort = (port: number) => {
 };
 
 const onSubmit = () => {
-  connectSocket(config.value.ip, config.value.port, router);
-  settingStore.socketConfig = { ...config.value };
-  router.push('/');
+  connectSocket();
 };
 </script>

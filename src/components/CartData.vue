@@ -5,15 +5,22 @@
     >
       <div class="col q-pa-sm text-white">
         {{
-          cartStore.cartItems?.customer?.name || cartStore.cartItems?.guestCustomerName || 'Guest'
+          cartStore.cartItems?.customer?.name ||
+          cartStore.cartItems?.guestCustomerName ||
+          'Guest'
         }}
-        <div class="" v-if="cartStore.cartItems?.daily_order_number">{{
-          cartStore.cartItems && cartStore.cartItems.daily_order_number
-            ? 'Daily Order# ' + cartStore.cartItems.daily_order_number
-            : ''
-        }}</div>
+        <div class="" v-if="cartStore.cartItems?.daily_order_number">
+          {{
+            cartStore.cartItems && cartStore.cartItems.daily_order_number
+              ? 'Daily Order# ' + cartStore.cartItems.daily_order_number
+              : ''
+          }}
+        </div>
       </div>
-      <div v-if="cartStore.cartItems?.order_type?.type" class="col q-pa-sm text-white text-right text-overline">
+      <div
+        v-if="cartStore.cartItems?.order_type?.type"
+        class="col q-pa-sm text-white text-right text-overline"
+      >
         ( {{ cartStore.cartItems?.order_type?.type }} )
       </div>
     </div>
@@ -85,9 +92,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { onCartUpdate } from '../boot/local-socket';
-import { EmitOrderCartData } from '../types/cart';
+import { ref, computed } from 'vue';
 import CardTotal from 'src/components/Table/CardTotal.vue';
 import { QTableColumn } from 'quasar';
 import { useMediaSettingsStore } from 'src/stores/media-settings-store';
@@ -95,7 +100,7 @@ import { storeToRefs } from 'pinia';
 import { useCartStore } from '../stores/cart';
 
 const settingStore = useMediaSettingsStore();
-const cartStore = useCartStore()
+const cartStore = useCartStore();
 
 const { displaySettings } = storeToRefs(settingStore);
 
@@ -104,19 +109,9 @@ const { displaySettings } = storeToRefs(settingStore);
 
 const formatMoney = (value: number | string) => '$' + Number(value).toFixed(2);
 
-const updateCart = (data: EmitOrderCartData) => {
-  cartStore.cartItems = {
-    ...data,
-    surcharge_amount: data.surcharge_amount ?? 0,
-    surcharge_type: data.surcharge_type ?? 0,
-    discount: data.discount ?? 0,
-  };
-  // customer.value = data.customer || data.guestCustomerName || { id: 0, name: 'Guest', email: '', phone_no: '' };
-};
-
 const tableRows = computed(
   () =>
-  cartStore.cartItems?.orderList?.map((item) => ({
+    cartStore.cartItems?.orderList?.map((item) => ({
       ...item,
       nameWithModifiers: `<strong>${item.name} ($${(item.price ?? 0).toFixed(
         2
@@ -153,10 +148,6 @@ const columns: QTableColumn[] = [
 ];
 
 const pagination = ref({ rowsPerPage: 9990 });
-
-onMounted(() => {
-  onCartUpdate(updateCart);
-});
 </script>
 
 <style scoped>
