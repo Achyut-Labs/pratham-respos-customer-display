@@ -1,37 +1,52 @@
 <template>
-  <q-card class="bg-primary rounded-borders">
-    <q-card-section>
+  <q-card bordered flat class="bg- rounded-borders">
+    <q-card-section class="text-slate-600">
       <div class="row q-col-gutter-md">
-        <div class="col text-bold text-white font-17">Sub Total: </div>
-        <div class="col text-right text-bold text-white font-17">${{ parseFloat(subTotal as string).toFixed(2) }}</div>
-      </div>
-
-      <div class="row q-col-gutter-md ">
-        <div class="col font-17 text-bold text-white">Discount: <span v-if="cartStore.cartItems?.discount_type===2"> ({{cartStore.cartItems?.discount}}%) </span> </div>
-        <div class="col font-17 text-right text-bold text-white">
-           {{ discountAmount ? discountAmount : 0 }}
+        <div class="col text-bold font-17">Sub Total:</div>
+        <div class="col text-right text-bold font-17">
+          ${{ parseFloat(subTotal as string).toFixed(2) }}
         </div>
       </div>
 
-      <div class="row q-col-gutter-md ">
-        <div class="col font-17 text-bold text-white">Surcharge: <span v-if="cartStore.cartItems?.surcharge_type===2"> ({{cartStore.cartItems?.surcharge_amount}}%) </span> </div>
-        <div class="col font-17 text-right text-bold text-white">
-           {{ surchargeAmount ? surchargeAmount : 0 }}
+      <div class="row q-col-gutter-md">
+        <div class="col font-17 text-bold">
+          Discount:
+          <span v-if="cartStore.cartItems?.discount_type === 2">
+            ({{ cartStore.cartItems?.discount }}%)
+          </span>
         </div>
-      </div><hr/>
-      <div class="row q-col-gutter-md ">
-        <div class="col text-h4 text-bold text-white">Total: </div>
-        <div class="col text-h4 text-right text-bold text-white">${{ parseFloat(totalAmount as string).toFixed(2) }}</div>
+        <div class="col font-17 text-right text-bold">
+          {{ discountAmount ? discountAmount : 0 }}
+        </div>
+      </div>
+
+      <div class="row q-col-gutter-md">
+        <div class="col font-17 text-bold">
+          Surcharge:
+          <span v-if="cartStore.cartItems?.surcharge_type === 2">
+            ({{ cartStore.cartItems?.surcharge_amount }}%)
+          </span>
+        </div>
+        <div class="col font-17 text-right text-bold">
+          {{ surchargeAmount ? surchargeAmount : 0 }}
+        </div>
+      </div>
+      <hr />
+      <div class="row q-col-gutter-md text-primary">
+        <div class="col text-h4 text-bold">Total:</div>
+        <div class="col text-h4 text-right text-bold">
+          ${{ parseFloat(totalAmount as string).toFixed(2) }}
+        </div>
       </div>
     </q-card-section>
   </q-card>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useCartStore } from '../../stores/cart'
+import { computed } from 'vue';
+import { useCartStore } from '../../stores/cart';
 
-const cartStore = useCartStore()
+const cartStore = useCartStore();
 const subTotal = computed(
   () => cartStore.cartItems?.subTotal?.toFixed(2) ?? '0.00'
 );
@@ -51,40 +66,43 @@ const totalAmount = computed(
 
 // };
 const surchargeAmount = computed(() => {
-  const val = calculateSurcharge()
-  return `+$${val?.toFixed(2)}`
-  }
-)
+  const val = calculateSurcharge();
+  return `+$${val?.toFixed(2)}`;
+});
 const discountAmount = computed(() => {
-  const val = calculateDiscount()
-  return `-$${val?.toFixed(2)}`
-  }
-)
+  const val = calculateDiscount();
+  return `-$${val?.toFixed(2)}`;
+});
 
 const calculateDiscount = () => {
-  let val = 0
-  if(cartStore.cartItems?.discount && cartStore.cartItems?.subTotal) {
-
-    val = cartStore.cartItems?.discount_type === 2 ? cartStore.cartItems?.subTotal * (cartStore.cartItems?.discount / 100) : cartStore.cartItems?.discount
+  let val = 0;
+  if (cartStore.cartItems?.discount && cartStore.cartItems?.subTotal) {
+    val =
+      cartStore.cartItems?.discount_type === 2
+        ? cartStore.cartItems?.subTotal * (cartStore.cartItems?.discount / 100)
+        : cartStore.cartItems?.discount;
   }
-  return val
-}
+  return val;
+};
 
 const calculateSurcharge = () => {
-  let val = 0
-  let discount = calculateDiscount()
-  if(cartStore.cartItems?.subTotal && cartStore.cartItems?.surcharge_amount) {
-    if(discount) {
-      val = cartStore.cartItems?.surcharge_type === 2 ? (cartStore.cartItems?.subTotal - discount) * (cartStore.cartItems?.surcharge_amount / 100) : cartStore.cartItems?.surcharge_amount
+  let val = 0;
+  let discount = calculateDiscount();
+  if (cartStore.cartItems?.subTotal && cartStore.cartItems?.surcharge_amount) {
+    if (discount) {
+      val =
+        cartStore.cartItems?.surcharge_type === 2
+          ? (cartStore.cartItems?.subTotal - discount) *
+            (cartStore.cartItems?.surcharge_amount / 100)
+          : cartStore.cartItems?.surcharge_amount;
     } else {
-      val = cartStore.cartItems?.surcharge_type === 2 ? cartStore.cartItems?.subTotal * (cartStore.cartItems?.surcharge_amount / 100) : cartStore.cartItems?.surcharge_amount
+      val =
+        cartStore.cartItems?.surcharge_type === 2
+          ? cartStore.cartItems?.subTotal *
+            (cartStore.cartItems?.surcharge_amount / 100)
+          : cartStore.cartItems?.surcharge_amount;
     }
   }
-  return val
-}
-
-
+  return val;
+};
 </script>
-
-<style scoped>
-</style>evalevalQCardQCardQCardSectionQCardSection

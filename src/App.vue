@@ -9,13 +9,13 @@ import { storeToRefs } from 'pinia';
 import { useSocket } from './pages/useSocket';
 
 const settingStore = useMediaSettingsStore();
+const { connect } = useSocket();
 
 const { socketConfig } = storeToRefs(settingStore);
-const { connectSocket } = useSocket();
 
 onMounted(() => {
   if (socketConfig.value.ip && socketConfig.value.port) {
-    connectSocket();
+    connect();
   }
 });
 </script>

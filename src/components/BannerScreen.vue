@@ -1,16 +1,5 @@
 <template>
   <div class="image-container pa-none">
-    <div>
-      <q-btn
-        class="absolute left-0 top-0"
-        @click="toggleFullScreen"
-        unelevated
-        no-caps
-        size="sm"
-        color="primary"
-        label="Toggle fullscreen "
-      ></q-btn>
-    </div>
     <q-carousel
       animated
       v-model="slide"
@@ -108,10 +97,6 @@ watch(
     }
   }
 );
-
-const toggleFullScreen = () => {
-  window.electronAPI.ipcRenderer.send('toggle-fullscreen');
-};
 </script>
 
 <style scoped>
