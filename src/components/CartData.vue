@@ -1,9 +1,9 @@
 <template>
   <div class=" ">
     <div
-      class="flex text-h6 bg- text-bold q-px-sm q-pt-none mx-1 rounded-borders"
+      class="flex text-h6 text-primary text-bold q-px-sm q-pt-none mx-1 rounded-borders"
     >
-      <div class="col q-pa-sm text-primary">
+      <div class="col q-pa-sm">
         {{
           cartStore.cartItems?.customer?.name ||
           cartStore.cartItems?.guestCustomerName ||
@@ -19,7 +19,7 @@
       </div>
       <div
         v-if="cartStore.cartItems?.order_type?.type"
-        class="col q-pa-sm text-white text-right text-overline"
+        class="col q-pa-sm text-right text-overline"
       >
         ( {{ cartStore.cartItems?.order_type?.type }} )
       </div>
