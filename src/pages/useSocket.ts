@@ -9,6 +9,7 @@ import {
 } from 'src/stores/media-settings-store';
 import { storeToRefs } from 'pinia';
 import { useCartStore } from 'src/stores/cart';
+import { useWebSocket } from '@vueuse/core';
 
 export const useSocket = () => {
   const socket = ref<Socket | null>(null);
@@ -55,6 +56,25 @@ export const useSocket = () => {
     };
   };
 
+  const displayInitialSetup = (data: { restaurantId: number }) => {
+    const settingsStore = useMediaSettingsStore();
+    settingsStore.displaySettings.restaurantId = data.restaurantId;
+  };
+
+  const onSocketConnect = () => {
+    Loading.show();
+    console.log('Connected to the local socket');
+    setTimeout(() => {
+      router.push('/');
+      Loading.hide();
+    }, 1000);
+  };
+
+  const onConnectError = () => {
+    console.error('Local Socket Connection error:');
+    router.push('/start');
+  };
+
   const connectSocket = () => {
     const { ip, port } = socketConfig.value;
     const protocol = Platform.is.cordova ? 'https' : 'http';
@@ -73,19 +93,9 @@ export const useSocket = () => {
     });
 
     // Handle socket events
-    socket.value.on('connect', () => {
-      Loading.show();
-      console.log('Connected to the local socket');
-      setTimeout(() => {
-        router.push('/');
-        Loading.hide();
-      }, 1000);
-    });
+    socket.value.on('connect', onSocketConnect);
 
-    socket.value.on('connect_error', (error) => {
-      console.error('Local Socket Connection error:', error.message);
-      router.push('/start');
-    });
+    socket.value.on('connect_error', onConnectError);
 
     socket.value.on('disconnect', () => {
       console.log('Disconnected from the local socket');
@@ -94,16 +104,43 @@ export const useSocket = () => {
     // Listen for events
     socket.value.on('update-cart', updateCart);
     socket.value.on('customer-display-settings', updateMediaSettings);
-    socket.value.on('setup', (data) => {
-      const settingsStore = useMediaSettingsStore();
-      settingsStore.displaySettings.restaurantId = data.restaurantId;
-      console.log('Connection event:', data);
-      socket.value?.onAny((ev) => console.log('Event received:', ev));
-    });
+    socket.value.on('setup', displayInitialSetup);
 
     // Connect to the socket
     socket.value.connect();
   };
+
+  const { open, status, close } = useWebSocket(`ws://192.168.31.246:${3000}`, {
+    immediate: false,
+    autoReconnect: true,
+    onMessage(ws, event) {
+      try {
+        const { eventName, data } = JSON.parse(event.data);
+        if (eventName) {
+          switch (eventName) {
+            case 'update-cart':
+              updateCart(data);
+              break;
+            case 'customer-display-settings':
+              updateMediaSettings(data);
+              break;
+            case 'setup':
+              const settingsStore = useMediaSettingsStore();
+              settingsStore.displaySettings.restaurantId = data.restaurantId;
+              break;
+
+            default:
+              break;
+          }
+        }
+      } catch (error) {
+        // console.log(error);
+      }
+      console.log(event.data);
+    },
+    onConnected: onSocketConnect,
+    onError: onConnectError,
+  });
 
   // Cleanup on component unmount
   onUnmounted(() => {
@@ -113,5 +150,15 @@ export const useSocket = () => {
     }
   });
 
-  return { connectSocket };
+  const connect = () => {
+    if (Platform.is.android) {
+      if (status.value === 'OPEN') close();
+      open();
+      return;
+    }
+
+    connectSocket();
+  };
+
+  return { connect };
 };

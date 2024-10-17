@@ -45,7 +45,7 @@ export const useMediaSettingsStore = defineStore('mediaSettings', {
   actions: {
     async getCustomerDisplayFile(params: GetFilesParams) {
       try {
-        Loading.show();
+        // Loading.show();
         const res: files | null = await api.get(
           'customer-display/files/list/public',
           { params }
@@ -63,7 +63,7 @@ export const useMediaSettingsStore = defineStore('mediaSettings', {
 
     async getAspectRatios() {
       try {
-        Loading.show();
+        // Loading.show();
         const res: aspectRatiosList | null = await api.get('aspect-ratios');
         // notifications.successNotify('Customer is Registered Successfully!')
         if (res) {
