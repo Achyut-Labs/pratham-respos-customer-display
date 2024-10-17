@@ -27,3 +27,21 @@
  *   }
  * }
  */
+
+import { contextBridge, ipcRenderer } from 'electron';
+
+const electronAPI = {
+  ipcRenderer: {
+    send: (channel: string, data?: any) => ipcRenderer.send(channel, data),
+    on: (channel: string, func: (...arg: any) => any) =>
+      ipcRenderer.on(channel, (_event, ...args) => func(...args)),
+  },
+};
+
+contextBridge.exposeInMainWorld('electronAPI', electronAPI);
+
+declare global {
+  interface Window {
+    electronAPI: typeof electronAPI;
+  }
+}

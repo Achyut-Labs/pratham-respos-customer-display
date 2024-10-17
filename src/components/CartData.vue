@@ -1,9 +1,9 @@
 <template>
   <div class=" ">
     <div
-      class="flex text-h6 bg-primary text-bold q-px-sm q-pt-none mx-1 rounded-borders"
+      class="flex text-h6 bg- text-bold q-px-sm q-pt-none mx-1 rounded-borders"
     >
-      <div class="col q-pa-sm text-white">
+      <div class="col q-pa-sm text-primary">
         {{
           cartStore.cartItems?.customer?.name ||
           cartStore.cartItems?.guestCustomerName ||

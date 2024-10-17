@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import os from 'os';
+import { ipcMain } from 'electron/main';
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();
@@ -41,9 +42,12 @@ function createWindow() {
     mainWindow = undefined;
   });
 
-  mainWindow.setMenuBarVisibility(false)
-  mainWindow.maximize()
+  mainWindow.setMenuBarVisibility(false);
+  mainWindow.maximize();
 
+  ipcMain.on('toggle-fullscreen', () => {
+    mainWindow!.setFullScreen(!mainWindow!.isFullScreen());
+  });
 }
 
 app.whenReady().then(createWindow);

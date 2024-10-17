@@ -1,6 +1,25 @@
 <template>
   <div class="image-container pa-none">
-    <q-carousel animated v-model="slide" infinite height="100%" transition-next="slide-left" transition-prev="slide-right" transition-duration="2000">
+    <div>
+      <q-btn
+        class="absolute left-0 top-0"
+        @click="toggleFullScreen"
+        unelevated
+        no-caps
+        size="sm"
+        color="primary"
+        label="Toggle fullscreen "
+      ></q-btn>
+    </div>
+    <q-carousel
+      animated
+      v-model="slide"
+      infinite
+      height="100%"
+      transition-next="slide-left"
+      transition-prev="slide-right"
+      transition-duration="2000"
+    >
       <q-carousel-slide
         v-for="(file, ind) in mediaSettingsStore.files"
         :name="ind + 1"
@@ -12,7 +31,7 @@
           class="media-content"
         />
         <video v-else controls muted autoplay class="media-content video-fit">
-          <source :src="file.file_path" :type="getVideoType(file.file_path)">
+          <source :src="file.file_path" :type="getVideoType(file.file_path)" />
           Your browser does not support the video tag.
         </video>
         <!-- <q-video
@@ -41,8 +60,8 @@ const slide = ref<number>(1);
 
 const slideInterval = ref<ReturnType<typeof setInterval> | null>(null); // Correct type for setInterval
 
-const getVideoType = (src: string) : string => {
-  const extension = src.split('.').pop()?.toLowerCase() || 'unknown'
+const getVideoType = (src: string): string => {
+  const extension = src.split('.').pop()?.toLowerCase() || 'unknown';
 
   switch (extension) {
     case 'mp4':
@@ -58,7 +77,8 @@ const getVideoType = (src: string) : string => {
     default:
       return 'unknown';
   }
-}
+};
+
 const startAutoplay = () => {
   slideInterval.value = setInterval(() => {
     if (mediaSettingsStore.files && mediaSettingsStore.files.length > 0)
@@ -88,6 +108,10 @@ watch(
     }
   }
 );
+
+const toggleFullScreen = () => {
+  window.electronAPI.ipcRenderer.send('toggle-fullscreen');
+};
 </script>
 
 <style scoped>
