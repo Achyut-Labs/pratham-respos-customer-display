@@ -9,12 +9,9 @@
           cartStore.cartItems?.guestCustomerName ||
           'Guest'
         }}
-        <div class="" v-if="cartStore.cartItems?.daily_order_number">
-          {{
-            cartStore.cartItems && cartStore.cartItems.daily_order_number
-              ? 'Daily Order# ' + cartStore.cartItems.daily_order_number
-              : ''
-          }}
+        <div>
+          Daily Order#
+          {{ cartStore.cartItems?.daily_order_number }}
         </div>
       </div>
       <div
