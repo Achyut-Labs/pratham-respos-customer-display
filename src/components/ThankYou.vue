@@ -1,10 +1,18 @@
 <template>
-  <q-dialog v-model="showDialog" persistent seamless transition-duration="1000" transition-show="jump-up" transition-hide="jump-down" backdrop-filter="brightness(60%)">
+  <q-dialog
+    v-model="modelValue"
+    persistent
+    seamless
+    transition-duration="1000"
+    transition-show="jump-up"
+    transition-hide="jump-down"
+    backdrop-filter="brightness(60%)"
+  >
     <q-card class="q-pa">
       <q-card-section>
         <div class="animated-text">
           <q-icon name="celebration" class="q-mr-md" />
-          <span class=" text-bold">Thank You For Your Order!</span>
+          <span class="text-bold">Thank You For Your Order!</span>
         </div>
       </q-card-section>
     </q-card>
@@ -12,18 +20,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useCartStore } from '../stores/cart';
+import { whenever } from '@vueuse/core';
 
-const showDialog = ref(false);
-const cartStore = useCartStore();
+const modelValue = defineModel({ default: false });
 
-onMounted(() => {
-  showDialog.value = true;
-
+whenever(modelValue, () => {
   setTimeout(() => {
-    showDialog.value = false; // Automatically close after 4 seconds
-    delete cartStore.cartItems?.paid;
+    modelValue.value = false; // Automatically close after 4 seconds
   }, 5000);
 });
 </script>
@@ -37,19 +40,24 @@ onMounted(() => {
 }
 
 @keyframes colorChange {
-  0%, 60%, 100% {
+  0%,
+  60%,
+  100% {
     color: var(--q-primary);
   }
-  40%, 80% {
+  40%,
+  80% {
     color: #ffffff; /* Reddish */
   }
 }
 
 @keyframes sizeChange {
-  0%, 100% {
+  0%,
+  100% {
     font-size: 15px;
   }
-  25%, 75% {
+  25%,
+  75% {
     font-size: 30px;
   }
 }

@@ -9,21 +9,25 @@
       transition-prev="slide-right"
       transition-duration="2000"
     >
-      <q-carousel-slide
-        v-for="(file, ind) in mediaSettingsStore.files"
-        :name="ind + 1"
-        :key="ind"
-      >
-        <q-img
-          v-if="file.file_type === 'image'"
-          :src="file.file_path"
-          class="media-content"
-        />
-        <video v-else controls muted autoplay class="media-content video-fit">
-          <source :src="file.file_path" :type="getVideoType(file.file_path)" />
-          Your browser does not support the video tag.
-        </video>
-        <!-- <q-video
+      <template v-if="mediaSettingsStore.files">
+        <q-carousel-slide
+          v-for="(file, ind) in mediaSettingsStore.files"
+          :name="ind + 1"
+          :key="ind"
+        >
+          <q-img
+            v-if="file.file_type === 'image'"
+            :src="file.file_path"
+            class="media-content"
+          />
+          <video v-else controls muted autoplay class="media-content video-fit">
+            <source
+              :src="file.file_path"
+              :type="getVideoType(file.file_path)"
+            />
+            Your browser does not support the video tag.
+          </video>
+          <!-- <q-video
           v-else
           ref="video"
           class="media-content video-fit"
@@ -31,19 +35,28 @@
           autoplay
           loop
         /> -->
+        </q-carousel-slide>
+      </template>
+
+      <q-carousel-slide name="id-one">
+        dfdffsdfssdfsfasfasfsfsf
+        <q-img :src="defaultCarouselImg" class="media-content" />
       </q-carousel-slide>
     </q-carousel>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, onUnmounted, watch } from 'vue';
+import { onMounted, ref, onUnmounted, watch, computed } from 'vue';
 import { useMediaSettingsStore } from '../stores/media-settings-store';
 import { storeToRefs } from 'pinia';
 
 const mediaSettingsStore = useMediaSettingsStore();
 
 const { displaySettings } = storeToRefs(mediaSettingsStore);
+const defaultCarouselImg = computed(
+  () => `https://picsum.photos/seed/picsum/${200}/300`
+);
 
 const slide = ref<number>(1);
 

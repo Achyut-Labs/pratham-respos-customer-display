@@ -13,19 +13,20 @@
 
       <p><strong>Why This Information Matter:</strong></p>
       <p>
-        <span
-          >This IP address and Port number is required to connect your customer
-          display to the POS system.</span
-        ><span>
+        <span>
+          This IP address and Port number is required to connect your customer
+          display to the POS system.
+        </span>
+        <span>
           Having this correctly configured will streamline customer display and
-          POS system communication.</span
-        >
+          POS system communication.
+        </span>
       </p>
       <p>
-        <strong
-          >Once you've entered these details, you'll be ready to experience
-          smooth customer display operations!</strong
-        >
+        <strong>
+          Once you've entered these details, you'll be ready to experience
+          smooth customer display operations!
+        </strong>
       </p>
       <p class="mt-6 text-lg font-semibold">Additional Notes:</p>
 
@@ -86,14 +87,11 @@
 
 <script setup lang="ts">
 import { useMediaSettingsStore } from 'src/stores/media-settings-store';
-import { useSocket } from './useSocket';
 import { ref } from 'vue';
 
 const settingStore = useMediaSettingsStore();
 
 const ip = ref(settingStore.socketConfig.ip);
-
-const { connect } = useSocket();
 
 const ipv4Regex =
   /^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}$/;
@@ -109,6 +107,6 @@ const validateIPv4 = (val: string) => {
 
 const onSubmit = () => {
   settingStore.socketConfig.ip = ip.value;
-  connect();
+  // connect();
 };
 </script>

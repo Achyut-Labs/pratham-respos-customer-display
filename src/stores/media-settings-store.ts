@@ -29,7 +29,7 @@ interface State {
 
 export const useMediaSettingsStore = defineStore('mediaSettings', {
   state: (): State => ({
-    socketConfig: { ip: '', port: 3000 },
+    socketConfig: { ip: '127.0.0.1', port: 3000 },
     displaySettings: {
       restaurantId: 0,
       groupToDisplay: 1,

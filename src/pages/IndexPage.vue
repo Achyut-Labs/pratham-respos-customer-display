@@ -1,5 +1,8 @@
 <template>
-  <q-page class="flex items-center full-height" :class="cartStore.cartItems?.paid ? 'blurred' : ''">
+  <q-page
+    class="flex items-center full-height"
+    :class="cartStore.cartItems?.paid ? 'blurred' : ''"
+  >
     <CustomerDisplay
       v-if="mediaSettingsStore.displaySettings.screenDivision !== 100"
       class="flex-none"
@@ -10,21 +13,19 @@
       "
     />
     <Banner class="flex-1" />
-    <ThankYou v-if="cartStore.cartItems?.paid" />
   </q-page>
 </template>
 
 <script setup lang="ts">
 import CustomerDisplay from 'src/components/CartData.vue';
 import Banner from 'src/components/BannerScreen.vue';
-import ThankYou from 'src/components/ThankYou.vue'
 import { useMediaSettingsStore } from '../stores/media-settings-store';
 import { onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useCartStore } from '../stores/cart';
 
 const mediaSettingsStore = useMediaSettingsStore();
-const cartStore = useCartStore()
+const cartStore = useCartStore();
 
 const { displaySettings } = storeToRefs(mediaSettingsStore);
 

@@ -4,6 +4,7 @@
       <router-view />
 
       <q-btn
+        v-if="$q.platform.is.electron"
         class="absolute right-0 top-0"
         @click="toggleFullScreen"
         unelevated
