@@ -14,7 +14,7 @@ const { connect } = useSocket();
 const { socketConfig } = storeToRefs(settingStore);
 
 onMounted(() => {
-  if (socketConfig.value.ip && socketConfig.value.port) {
+  if (socketConfig.value.ip) {
     connect();
   }
 });

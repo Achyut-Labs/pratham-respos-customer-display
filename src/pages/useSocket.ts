@@ -1,6 +1,5 @@
-import { Loading, Platform } from 'quasar';
-import { io, Socket } from 'socket.io-client';
-import { onUnmounted, ref } from 'vue';
+import { Loading } from 'quasar';
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { EmitOrderCartData } from 'src/types/cart';
 import {
@@ -12,7 +11,6 @@ import { useCartStore } from 'src/stores/cart';
 import { useWebSocket } from '@vueuse/core';
 
 export const useSocket = () => {
-  const socket = ref<Socket | null>(null);
   const router = useRouter();
   const cartStore = useCartStore();
   const settingStore = useMediaSettingsStore();
@@ -56,11 +54,6 @@ export const useSocket = () => {
     };
   };
 
-  const displayInitialSetup = (data: { restaurantId: number }) => {
-    const settingsStore = useMediaSettingsStore();
-    settingsStore.displaySettings.restaurantId = data.restaurantId;
-  };
-
   const onSocketConnect = () => {
     Loading.show();
     console.log('Connected to the local socket');
@@ -75,42 +68,8 @@ export const useSocket = () => {
     router.push('/start');
   };
 
-  const connectSocket = () => {
-    const { ip, port } = socketConfig.value;
-    const protocol = Platform.is.cordova ? 'https' : 'http';
-    const socketUrl = `${protocol}://${ip}:${port}`;
-
-    // Close existing connection if any
-    if (socket.value) {
-      socket.value.disconnect();
-      console.log('Existing socket connection closed.');
-    }
-
-    socket.value = io(socketUrl, {
-      autoConnect: false,
-      reconnectionDelay: 2000,
-      reconnectionAttempts: 10,
-    });
-
-    // Handle socket events
-    socket.value.on('connect', onSocketConnect);
-
-    socket.value.on('connect_error', onConnectError);
-
-    socket.value.on('disconnect', () => {
-      console.log('Disconnected from the local socket');
-    });
-
-    // Listen for events
-    socket.value.on('update-cart', updateCart);
-    socket.value.on('customer-display-settings', updateMediaSettings);
-    socket.value.on('setup', displayInitialSetup);
-
-    // Connect to the socket
-    socket.value.connect();
-  };
-
-  const { open, status, close } = useWebSocket(`ws://192.168.31.246:${3000}`, {
+  const socketUrl = computed(() => `ws://${socketConfig.value.ip}:${3000}`);
+  const { open, status, close } = useWebSocket(socketUrl, {
     immediate: false,
     autoReconnect: true,
     onMessage(ws, event) {
@@ -142,22 +101,9 @@ export const useSocket = () => {
     onError: onConnectError,
   });
 
-  // Cleanup on component unmount
-  onUnmounted(() => {
-    if (socket.value) {
-      socket.value.disconnect();
-      console.log('Socket connection closed on unmount.');
-    }
-  });
-
   const connect = () => {
-    if (Platform.is.android) {
-      if (status.value === 'OPEN') close();
-      open();
-      return;
-    }
-
-    connectSocket();
+    if (status.value === 'OPEN') close();
+    open();
   };
 
   return { connect };

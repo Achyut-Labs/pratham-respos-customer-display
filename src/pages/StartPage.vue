@@ -52,25 +52,26 @@
         >
       </p>
       <q-separator class="my-10" />
-      <div class="text-center">
+      <div class="text-center mx-auto max-w-96">
+        <q-input
+          dense
+          v-model="ip"
+          label="Enter IPv4 Address"
+          hint="Format: xxx.xxx.xxx.xxx"
+          style="max-width: 350px"
+          :rules="[validateIPv4]"
+          class="mr-1"
+          outlined
+        />
         <div class="flex items-center justify-center text-center">
-          <q-input
-            v-model="settingStore.socketConfig.ip"
-            label="Enter IPv4 Address"
-            hint="Format: xxx.xxx.xxx.xxx"
-            style="max-width: 350px"
-            :rules="[validateIPv4]"
-            class="mr-1"
-            outlined
-          />
-          <q-input
+          <!-- <q-input
             v-model.number="settingStore.socketConfig.port"
             label="Enter Port Number"
             style="max-width: 350px"
             :rules="[(val:number) => isValidPort(val) || 'Invalid port number']"
             class="ml-1"
             outlined
-          />
+          /> -->
         </div>
         <q-btn
           label="Submit"
@@ -86,8 +87,11 @@
 <script setup lang="ts">
 import { useMediaSettingsStore } from 'src/stores/media-settings-store';
 import { useSocket } from './useSocket';
+import { ref } from 'vue';
 
 const settingStore = useMediaSettingsStore();
+
+const ip = ref(settingStore.socketConfig.ip);
 
 const { connect } = useSocket();
 
@@ -99,11 +103,12 @@ const validateIPv4 = (val: string) => {
   return ipv4Regex.test(val) || 'Invalid IPv4 address';
 };
 
-const isValidPort = (port: number) => {
-  return Number.isInteger(port) && port > 0 && port <= 65535;
-};
+// const isValidPort = (port: number) => {
+//   return Number.isInteger(port) && port > 0 && port <= 65535;
+// };
 
 const onSubmit = () => {
+  settingStore.socketConfig.ip = ip.value;
   connect();
 };
 </script>
